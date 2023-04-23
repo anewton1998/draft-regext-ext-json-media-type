@@ -50,8 +50,8 @@ Here is an example:
     
 # Using The RDAP With Extensions Media Type
 
-RFC 7480 specifies tha usage of 'application/json', 'application/rdap+json' or
-both withe HTTP Accept header. When using the media type defined by this document,
+RFC 7480 specifies the usage of 'application/json', 'application/rdap+json' or
+both with HTTP Accept header. When using the media type defined by this document,
 the 'application/rdap+json' media type MUST also be used in the Accept header.
 
 An example:
