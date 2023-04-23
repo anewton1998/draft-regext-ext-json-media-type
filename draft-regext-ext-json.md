@@ -40,13 +40,13 @@ when an RDAP extension needs to be described during HTTP content negotiation.
 
 # The RDAP With Extensions Media Type
 
-The media type defined by this document is 'application/extrdap+json'. This media
-type has a parameter of "extensions" which is a whitespace separate list of RDAP
+The media type defined by this document is 'application/rdapx+json'. This media
+type has a parameter of "extensions" which is a whitespace separated list of RDAP
 extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
 
-    appliation/extrdap+json extensions="rdap_level_0 fred"
+    appliation/rdapx+json extensions="rdap_level_0 fred"
     
 # Using The RDAP With Extensions Media Type
 
@@ -56,7 +56,7 @@ the 'application/rdap+json' media type MUST also be used in the Accept header.
 
 An example:
 
-    accept: application/rdap+json, application/extrdap+json extensions="rdap_level_0 fred"
+    accept: application/rdap+json; application/rdapx+json extensions="rdap_level_0 fred"
     
 When a server is programmed to understand the RDAP With Extensions media type,
 it should respond with this media type in the Content-Type header. By doing so,
