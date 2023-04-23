@@ -46,7 +46,7 @@ extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
 
-    application/rdapx+json extensions="rdap_level_0 fred"
+    application/rdapx+json;extensions="rdap_level_0 fred"
     
 # Using The RDAP With Extensions Media Type
 
