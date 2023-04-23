@@ -16,7 +16,7 @@ async fn domain_redirect(connect_info: ConnectInfo<SocketAddr>, headers: HeaderM
     tracing::info!("Serving request from {}", connect_info.0);
     tracing::info!("accept values: {:?}", headers.get("accept").unwrap());
     tracing::info!("redirecting to server on port 4000");
-    Redirect::permanent("http://127.0.0.1:4000/ex2/domain/foo.example")
+    Redirect::temporary("http://127.0.0.1:4000/ex2/domain/foo.example")
 }
 
 /// This function will send an RDAP answer (which is an RDAP error).
