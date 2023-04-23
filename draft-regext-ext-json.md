@@ -46,7 +46,7 @@ extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
 
-    appliation/rdapx+json extensions="rdap_level_0 fred"
+    application/rdapx+json extensions="rdap_level_0 fred"
     
 # Using The RDAP With Extensions Media Type
 
@@ -56,7 +56,7 @@ the 'application/rdap+json' media type MUST also be used in the Accept header.
 
 An example:
 
-    accept: application/rdap+json; application/rdapx+json extensions="rdap_level_0 fred"
+    accept: application/rdap+json, application/rdapx+json;extensions="rdap_level_0 fred"
     
 When a server is programmed to understand the RDAP With Extensions media type,
 it should respond with this media type in the Content-Type header. By doing so,
