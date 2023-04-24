@@ -68,6 +68,40 @@ When the RDAP With Extensions media type is used in the Content-Type header, the
 values in the media type's extension parameter MUST match the values in the `rdapConformance`
 array in the return JSON.
 
+# IANA Considerations
+
+Type name: application
+
+Subtype name: rdapx+json
+
+Required parameters: This media type has a parameter of "extensions" which is a whitespace-separated list of RDAP extensions as defined in the IANA RDAP Extensions registry.
+
+Optional parameters:  N/A
+
+Encoding considerations: See Section 3.1 of [RFC6839].
+
+Security considerations: The media represented by this identifier does not have security considerations beyond that found in Section 12 of [RFC8259].
+
+Interoperability considerations: There are no known interoperability problems regarding this media format.
+
+Published specification: This document.
+
+Applications that use this media type: Implementations of the Registration Data Access Protocol (RDAP) with Extensions.
+
+Additional information: This media type is a product of the IETF REGEXT Working Group. The REGEXT charter, information on the REGEXT mailing list, and other documents produced by the REGEXT Working Group can be found at https://datatracker.ietf.org/wg/regext/.
+
+Person & email address to contact for further information: IESG <iesg&ietf.org>
+
+Intended usage: COMMON
+
+Restrictions on usage: none
+
+Author: Andy Newton
+
+Change controller: IETF
+
+Provisional Registration: No
+
 {backmatter}
 
 # Design Considerations
