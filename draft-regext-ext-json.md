@@ -74,7 +74,9 @@ Type name: application
 
 Subtype name: rdapx+json
 
-Required parameters: extensions
+Required parameters: This media type has a parameter of "extensions" which is a whitespace-separated list of RDAP extensions as defined in the IANA RDAP Extensions registry.
+
+Optional parameters:  N/A
 
 Encoding considerations: See Section 3.1 of [RFC6839].
 
@@ -85,10 +87,10 @@ Section 12 of [RFC8259].
 Interoperability considerations: There are no known
 interoperability problems regarding this media format.
 
-Published specification: This draft.
+Published specification: This document.
 
 Applications that use this media type: Implementations of the
-Registration Data Access Protocol (RDAP).
+Registration Data Access Protocol (RDAP) with Extensions.
 
 Additional information: This media type is a product of the IETF
 REGEXT Working Group.  The REGEXT charter, information on the
