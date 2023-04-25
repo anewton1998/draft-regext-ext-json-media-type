@@ -41,7 +41,7 @@ when an RDAP extension needs to be described during HTTP content negotiation.
 # The RDAP With Extensions Media Type
 
 The media type defined by this document is 'application/rdapx+json'. This media
-type has a parameter of "extensions" which is a whitespace separated list of RDAP
+type has a parameter of "extensions" which is a whitespace-separated list of RDAP
 extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
@@ -65,7 +65,7 @@ the server will use the 'application/rdap+json' media type signalling to the cli
 that the RDAP With Extensions media type is not recognized by the server.
 
 When the RDAP With Extensions media type is used in the Content-Type header, the
-values in the media type's extension parameter MUST match the values in the `rdapConformance`
+values in the media type's "extensions" parameter MUST match the values in the `rdapConformance`
 array in the return JSON.
 
 # IANA Considerations
@@ -231,7 +231,7 @@ being identified by a URI and pointed to by the location of a URL. RDAP extensio
 the portions of JSON returned by the server but are not intended to change the resource
 being identified. That is, a domain registration is the same domain registration regardless
 of whether the postal address in that domain registration is communicated via JCard or
-a new RDAP extensions for JSContact.
+a new RDAP extension for JSContact.
 
 Changing how the content of a resource is conveyed is called content negotiation and
 is discussed in detail in RFC 9110 using media types.
@@ -265,7 +265,7 @@ the conformance would appear as:
 ]    
 ```
 
-The ussage with the `rdax` media type would be:
+The usage with the `rdapx` media type would be:
 
 ```
 application/rdapx+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
