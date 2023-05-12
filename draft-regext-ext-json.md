@@ -152,7 +152,7 @@ capabilities of Bob's client will have been incorrectly signalled to the server.
 
 The RDAP ecosystem uses redirects in many situations. RFC 7480 discusses "aggregators", which
 are RDAP servers used to help clients find authoritative RDAP servers using the RDAP bootstrap
-registires. Redirects are also heavily used by the RIRs when IP addresses or autonomous
+registries. Redirects are also heavily used by the RIRs when IP addresses or autonomous
 system numbers are transferred from one RIR to another.
 
 Within HTTP, URI query parameters are not explicitly preserved during a redirect (probably
@@ -160,7 +160,7 @@ due to architecture considerations, see the section below). Specific to RDAP, RF
 instructs RDAP servers to ignore unknown query parameters and instructs clients not to
 transform a URL of a redirect.
 
-Therefore, query parameters denoting RDAP extentions will not survive redirects. This can
+Therefore, query parameters denoting RDAP extensions will not survive redirects. This can
 be readily observed in currently deployed RDAP servers:
 
 ```
