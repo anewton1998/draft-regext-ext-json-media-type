@@ -1,15 +1,17 @@
 %%%
-Title = "An RDAP Extensions Media Type"
-area = "Internet"
-workgroup = "Network Working Group"
+Title = "An RDAP With Extensions Media Type"
+area = "Applications and Real-Time Area (ART)"
+workgroup = "Registration Protocols Extensions (regext)"
+abbrev = "rdapx"
+updates = [7480]
+ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-newton-regext-ext-json-media-type-00"
+value = "draft-newton-regext-rdapx-media-type-00"
 stream = "IETF"
-status = "standards track"
-
-date = 2023-04-21T00:00:00Z
+status = "standard"
+date = 2023-05-13T00:00:00Z
 
 [[author]]
 initials="A."
@@ -34,7 +36,7 @@ type with RDAP.
 
 # First Section
 
-RFC 7480 defines the 'application/rdap+json' media type to be used with RDAP. This
+[@!RFC7480] defines the 'application/rdap+json' media type to be used with RDAP. This
 document defines a new media type to be used in conjuction with the current media type
 when an RDAP extension needs to be described during HTTP content negotiation.
 
@@ -50,7 +52,7 @@ Here is an example:
     
 # Using The RDAP With Extensions Media Type
 
-RFC 7480 specifies the usage of 'application/json', 'application/rdap+json' or
+[@!RFC7480] specifies the usage of 'application/json', 'application/rdap+json' or
 both with HTTP Accept header. When using the media type defined by this document,
 the 'application/rdap+json' media type MUST also be used in the Accept header.
 
@@ -59,14 +61,43 @@ An example:
     accept: application/rdap+json, application/rdapx+json;extensions="rdap_level_0 fred"
     
 When a server is programmed to understand the RDAP With Extensions media type,
-it should respond with this media type in the Content-Type header. By doing so,
+it SHOULD respond with this media type in the Content-Type header. By doing so,
 clients will be able to detect if the server recognizes the media type. Otherwise,
 the server will use the 'application/rdap+json' media type signalling to the client
 that the RDAP With Extensions media type is not recognized by the server.
+This updates the usage of the Content-Type header with RDAP defined in RFC 7480,
+but this usage is backward compatible.
 
 When the RDAP With Extensions media type is used in the Content-Type header, the
-values in the media type's extension parameter MUST match the values in the `rdapConformance`
-array in the return JSON.
+values in the media type's extension parameter SHOULD match the values in the `rdapConformance`
+array in the return JSON. When there is a mismatch between extension parameters and
+the `rdapConformance` array, clients SHOULD give preference to the `rdapConformance`
+array.
+
+# Usage in RDAP Links
+
+[@!RFC9083, section 4.2] defines a link structure used in RDAP.
+
+    {
+      "value" : "https://example.com/context_uri",
+      "rel" : "self",
+      "href" : "https://example.com/target_uri",
+      "hreflang" : [ "en", "ch" ],
+      "title" : "title",
+      "media" : "screen",
+      "type" : "application/json"
+    }
+
+The type attribute signals to a client the expected media type of the resource
+referenced in the href attribute, and some clients use this information to determine
+if the URI in the href attribute should be dereferenced.
+
+Servers MAY use the RDAP With Extensions media type in the type attribute if a client
+has negotiated content with the server using the RDAP With Extensions media type, 
+the resource referenced by the URI matches the RDAP With Extensions media type, and
+the resource referenced by the URI is served by a server compliant with this specification.
+Otherwise, use of the `application/rdap+json` media type is RECOMMENDED when the URI
+references RDAP resources. 
 
 {backmatter}
 
@@ -74,7 +105,7 @@ array in the return JSON.
 
 ## Not Reusing the Existing Media Type
 
-Section 4.3 of RFC 6838 strongly discourages the creation of new parameters on existing
+[@?RFC6838, section 4.3] strongly discourages the creation of new parameters on existing
 media types to enable new features. As RDAP has always had extensions, it could be argued
 that adding an "extensions" parameter to the existing "application/rdap+json" media type
 is not adding a new feature to RDAP. However, the opposite could be argued that adding
@@ -86,7 +117,7 @@ examining media types as exact string matches may incorrectly conclude that the 
 media type with an unknown, new parameter may not be the same as the existing media
 type without parameters. A similar, though less likely, concern exists for clients.
 
-As servers are required to handle multiple media types according to RFC 7480 and RFC 9110,
+As servers are required to handle multiple media types according to [@!RFC7480] and [@?RFC9110],
 it therefore seems reasonable to conclude that defining a new media type for use with
 the existing media type is best to preserve backward compatibility.
 
@@ -96,7 +127,7 @@ Another design approach to communicating RDAP extensions from the client to the
 server would be the use of URI query parameters:
 
 ```
-https://rdap.example/domain/foo.example?extensions=fizz%20buzz  
+https://rdap.example/domain/foo.example?extensions=fizzbuzz  
 ```
 
 ### Copy and Paste
@@ -116,13 +147,13 @@ capabilities of Bob's client will have been incorrectly signalled to the server.
 
 ### Redirects
 
-The RDAP ecosystem uses redirects in many situations. RFC 7480 discusses "aggregators", which
+The RDAP ecosystem uses redirects in many situations. [@!RFC7480] discusses "aggregators", which
 are RDAP servers used to help clients find authoritative RDAP servers using the RDAP bootstrap
 registires. Redirects are also heavily used by the RIRs when IP addresses or autonomous
 system numbers are transferred from one RIR to another.
 
 Within HTTP, URI query parameters are not explicitly preserved during a redirect (probably
-due to architecture considerations, see the section below). Specific to RDAP, RFC 7480
+due to architecture considerations, see the section below). Specific to RDAP, [@!RFC7480]
 instructs RDAP servers to ignore unknown query parameters and instructs clients not to
 transform a URL of a redirect.
 
@@ -134,7 +165,7 @@ curl -v https://rdap-bootstrap.arin.net/bootstrap/autnum/2830?extension=fizzbuzz
 ```
 
 To further demonstrate that query parameters do not survive redirects but that media types
-do survive redirects, considered the code found [here](https://github.com/anewton1998/draft-regext-ext-json-media-type).
+do survive redirects, consider the code found [here](https://github.com/anewton1998/draft-regext-ext-json-media-type).
 This code consists of a simple client and a simple server. The client sets both a new
 media type and query parameters. The servers listens on two ports, redirecting the client
 from a URL on the first port to a URL on the second port.
@@ -192,7 +223,7 @@ whereas preservation of media types is common.
 
 ### Architectual Violations
 
-As noted in RFC 3986, URI query parameters are meant to be part of the identity of the resource
+As noted in [@?RFC3986], URI query parameters are meant to be part of the identity of the resource
 being identified by a URI and pointed to by the location of a URL. RDAP extensions change
 the portions of JSON returned by the server but are not intended to change the resource
 being identified. That is, a domain registration is the same domain registration regardless
@@ -200,7 +231,7 @@ of whether the postal address in that domain registration is communicated via JC
 a new RDAP extensions for JSContact.
 
 Changing how the content of a resource is conveyed is called content negotiation and
-is discussed in detail in RFC 9110 using media types.
+is discussed in detail in [@?RFC9110] using media types.
 
 Readers should note that protocol design is not a "priestly affair" in which architectural
 violations are strictly forbidden. Every design decision is a trade-off. However, following
