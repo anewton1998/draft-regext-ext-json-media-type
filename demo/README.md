@@ -1,7 +1,7 @@
 # About
 
 This code demonstrates a simple RDAP server and client using
-the `application/extrdap+json` media type.
+the `application/rdap-x+json` media type.
 
 # Building
 

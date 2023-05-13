@@ -29,10 +29,7 @@ async fn domain_answer(
     tracing::info!("responding with an unuseful error");
     (
         StatusCode::from_u16(418).unwrap(),
-        [(
-            "content-type",
-            r#"application/extrdap;extensions="foo bar""#,
-        )],
+        [("content-type", r#"application/rdap-x;extensions="foo bar""#)],
         r#"{"errorCode":418,"title": "Your Beverage Choice is Not Available"}"#,
     )
 }
