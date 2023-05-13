@@ -43,7 +43,7 @@ when an RDAP extension needs to be described during HTTP content negotiation.
 # The RDAP With Extensions Media Type
 
 The media type defined by this document is 'application/rdapx+json'. This media
-type has a parameter of "extensions" which is a whitespace separated list of RDAP
+type has a parameter of "extensions" which is a whitespace-separated list of RDAP
 extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
@@ -99,6 +99,40 @@ the resource referenced by the URI is served by a server compliant with this spe
 Otherwise, use of the `application/rdap+json` media type is RECOMMENDED when the URI
 references RDAP resources. 
 
+# IANA Considerations
+
+Type name: application
+
+Subtype name: rdapx+json
+
+Required parameters: This media type has a parameter of "extensions" which is a whitespace-separated list of RDAP extensions as defined in the IANA RDAP Extensions registry.
+
+Optional parameters:  N/A
+
+Encoding considerations: See Section 3.1 of [RFC6839].
+
+Security considerations: The media represented by this identifier does not have security considerations beyond that found in Section 12 of [RFC8259].
+
+Interoperability considerations: There are no known interoperability problems regarding this media format.
+
+Published specification: This document.
+
+Applications that use this media type: Implementations of the Registration Data Access Protocol (RDAP) with Extensions.
+
+Additional information: This media type is a product of the IETF REGEXT Working Group. The REGEXT charter, information on the REGEXT mailing list, and other documents produced by the REGEXT Working Group can be found at https://datatracker.ietf.org/wg/regext/.
+
+Person & email address to contact for further information: IESG <iesg&ietf.org>
+
+Intended usage: COMMON
+
+Restrictions on usage: none
+
+Author: Andy Newton
+
+Change controller: IETF
+
+Provisional Registration: No
+
 {backmatter}
 
 # Design Considerations
@@ -149,7 +183,7 @@ capabilities of Bob's client will have been incorrectly signalled to the server.
 
 The RDAP ecosystem uses redirects in many situations. [@!RFC7480] discusses "aggregators", which
 are RDAP servers used to help clients find authoritative RDAP servers using the RDAP bootstrap
-registires. Redirects are also heavily used by the RIRs when IP addresses or autonomous
+registries. Redirects are also heavily used by the RIRs when IP addresses or autonomous
 system numbers are transferred from one RIR to another.
 
 Within HTTP, URI query parameters are not explicitly preserved during a redirect (probably
@@ -157,7 +191,7 @@ due to architecture considerations, see the section below). Specific to RDAP, [@
 instructs RDAP servers to ignore unknown query parameters and instructs clients not to
 transform a URL of a redirect.
 
-Therefore, query parameters denoting RDAP extentions will not survive redirects. This can
+Therefore, query parameters denoting RDAP extensions will not survive redirects. This can
 be readily observed in currently deployed RDAP servers:
 
 ```
@@ -228,7 +262,7 @@ being identified by a URI and pointed to by the location of a URL. RDAP extensio
 the portions of JSON returned by the server but are not intended to change the resource
 being identified. That is, a domain registration is the same domain registration regardless
 of whether the postal address in that domain registration is communicated via JCard or
-a new RDAP extensions for JSContact.
+a new RDAP extension for JSContact.
 
 Changing how the content of a resource is conveyed is called content negotiation and
 is discussed in detail in [@?RFC9110] using media types.
@@ -262,7 +296,7 @@ the conformance would appear as:
 ]    
 ```
 
-The ussage with the `rdax` media type would be:
+The usage with the `rdapx` media type would be:
 
 ```
 application/rdapx+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
