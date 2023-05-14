@@ -18,12 +18,17 @@ initials="A."
 surname="Newton"
 fullname="Andy Newton"
 organization="ICANN"
+[author.address]
+email = "andy@hxr.us"
 
 [[author]]
 initials="J."
 surname="Singh"
 fullname="Jasdip Singh"
 organization="ARIN"
+[author.address]
+email = "jasdips@arin.net"
+
 %%%
 
 .# Abstract
@@ -71,6 +76,13 @@ that the RDAP-X media type is not recognized by the server.
 This updates the usage of the Content-Type header with RDAP defined in RFC 7480,
 but this usage is backward compatible.
 
+If both a client and server support the RDAP-X media type, and the client requests
+an extension that is unimplemented by the server, the server SHOULD respond with
+the RDAP-X media type using only extensions implemented by the server. This behavior
+is backward compatible as RDAP clients must ignore unknown extensions as specified by
+[@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
+
+
 When the RDAP-X media type is used in the Content-Type header, the
 values in the media type's extension parameter SHOULD match the values in the `rdapConformance`
 array in the return JSON. When there is a mismatch between extension parameters and
@@ -106,7 +118,7 @@ references RDAP resources.
 
 Type name: application
 
-Subtype name: rdapx+json
+Subtype name: rdap-x+json
 
 Required parameters: This media type has a parameter of "extensions" which is a whitespace-separated list of RDAP extensions as defined in the IANA RDAP Extensions registry.
 
@@ -299,10 +311,10 @@ the conformance would appear as:
 ]    
 ```
 
-The usage with the `rdapx` media type would be:
+The usage with the `rdap-x` media type would be:
 
 ```
-application/rdapx+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
+application/rdap-x+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
 ```
 
 Readers should note that this scenario is provided to show design intent and is not
