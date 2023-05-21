@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-newton-regext-rdap-x-media-type-00"
 stream = "IETF"
 status = "standard"
-date = 2023-05-16T00:00:00Z
+date = 2023-05-21T00:00:00Z
 
 [[author]]
 initials="A."
@@ -39,7 +39,7 @@ type with RDAP.
 
 {mainmatter}
 
-# First Section
+# Background
 
 [@!RFC7480] defines the 'application/rdap+json' media type to be used with RDAP. This
 document defines a new media type to be used in conjuction with the current media type
