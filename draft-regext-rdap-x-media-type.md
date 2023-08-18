@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-newton-regext-rdap-x-media-type-00"
 stream = "IETF"
 status = "standard"
-date = 2023-05-21T00:00:00Z
+date = 2023-08-22T00:00:00Z
 
 [[author]]
 initials="A."
@@ -66,7 +66,8 @@ the 'application/rdap+json' media type MUST also be used in the Accept header.
 
 An example:
 
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 fred"
+    accept: application/rdap+json;q=0.9, 
+        application/rdap-x+json;extensions="rdap_level_0 rdapx fred";q=1
     
 When a server is programmed to understand the RDAP-X media type,
 it SHOULD respond with this media type in the Content-Type header. By doing so,
@@ -82,12 +83,19 @@ the RDAP-X media type using only extensions implemented by the server. This beha
 is backward compatible as RDAP clients must ignore unknown extensions as specified by
 [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
 
-
 When the RDAP-X media type is used in the Content-Type header, the
 values in the media type's extension parameter SHOULD match the values in the `rdapConformance`
 array in the return JSON. When there is a mismatch between extension parameters and
 the `rdapConformance` array, clients SHOULD give preference to the `rdapConformance`
 array.
+
+Just as servers should not put extensions into the `rdapConformance` array for which
+they do not support, servers SHOULD NOT list extensions in the RDAP-X media type for
+which they do not support.
+
+Nothing in this specification sidesteps or obviates the HTTP content negotiation defined
+in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower qvalue than
+any other media type, that is a signal not to use RDAP-X.
 
 # Usage in RDAP Links
 
@@ -113,6 +121,15 @@ the resource referenced by the URI matches the RDAP-X media type, and
 the resource referenced by the URI is served by a server compliant with this specification.
 Otherwise, use of the `application/rdap+json` media type is RECOMMENDED when the URI
 references RDAP resources. 
+
+# RDAP-X Extension
+
+This document defines an RDAP "profile" extension using the identifier "rdapx" (hyphen
+characters are not allowed in RDAP extension identifiers). This RDAP extension defines
+no additional RDAP queries or response structures.
+
+The purpose of this RDAP extension is to allow servers to signal support for RDAP-X in
+`rdapConformance` arrays of responses to `/help` (aka "service discovery").
 
 # IANA Considerations
 
@@ -223,48 +240,24 @@ Here is the output of the client. It shows that the query parameters are not aut
 preserved but that the media type is automatically preserved.
 
 ```
-2023-05-13T19:48:42.055902Z  INFO client: sending reqwest
-2023-05-13T19:48:42.098605Z DEBUG reqwest::connect: starting new connection: http://127.0.0.1:3000/
-2023-05-13T19:48:42.098696Z DEBUG hyper::client::connect::http: connecting to 127.0.0.1:3000
-2023-05-13T19:48:42.098915Z DEBUG hyper::client::connect::http: connected to 127.0.0.1:3000
-2023-05-13T19:48:42.099407Z DEBUG hyper::proto::h1::io: flushed 147 bytes
-2023-05-13T19:48:42.100343Z DEBUG hyper::proto::h1::io: parsed 3 headers
-2023-05-13T19:48:42.100392Z DEBUG hyper::proto::h1::conn: incoming body is empty
-2023-05-13T19:48:42.100537Z DEBUG hyper::client::pool: pooling idle connection for ("http", 127.0.0.1:3000)
-2023-05-13T19:48:42.100730Z DEBUG reqwest::async_impl::client: redirecting 'http://127.0.0.1:3000/ex1/domain/foo.example?foo=bar' to 'http://127.0.0.1:4000/ex2/domain/foo.example'
-2023-05-13T19:48:42.100873Z DEBUG reqwest::connect: starting new connection: http://127.0.0.1:4000/
-2023-05-13T19:48:42.100933Z DEBUG hyper::client::connect::http: connecting to 127.0.0.1:4000
-2023-05-13T19:48:42.101157Z DEBUG hyper::client::connect::http: connected to 127.0.0.1:4000
-2023-05-13T19:48:42.101667Z DEBUG hyper::proto::h1::io: flushed 202 bytes
-2023-05-13T19:48:42.102419Z DEBUG hyper::proto::h1::io: parsed 3 headers
-2023-05-13T19:48:42.102462Z DEBUG hyper::proto::h1::conn: incoming body is content-length (66 bytes)
-2023-05-13T19:48:42.102533Z DEBUG hyper::proto::h1::conn: incoming body completed
-2023-05-13T19:48:42.102634Z DEBUG hyper::client::pool: pooling idle connection for ("http", 127.0.0.1:4000)
-2023-05-13T19:48:42.102642Z  INFO client: returned content type: "application/rdap-x;extensions=\"foo bar\""
-2023-05-13T19:48:42.102664Z  INFO client: status code is 418 I'm a teapot
-2023-05-13T19:48:42.102777Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
+2023-08-18T17:48:14.949271Z  INFO client: sending reqwest
+2023-08-18T17:48:14.998895Z  INFO client: returned content type: "application/rdap-x;extensions=\"foo bar\""
+2023-08-18T17:48:14.998929Z  INFO client: status code is 418 I'm a teapot
+2023-08-18T17:48:14.998999Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
 ```
 
 Here is the output of the server. It show that the client, upon redirect, automatically sends the media type
 but does not automatically preserve the query parameters.
 
 ```
-2023-05-13T19:48:30.935786Z  INFO servers: starting server on port 3000
-2023-05-13T19:48:30.935816Z  INFO servers: starting server on port 4000
-2023-05-13T19:48:42.099642Z DEBUG hyper::proto::h1::io: parsed 2 headers
-2023-05-13T19:48:42.099688Z DEBUG hyper::proto::h1::conn: incoming body is empty
-2023-05-13T19:48:42.099847Z  INFO servers: Serving request from 127.0.0.1:45264
-2023-05-13T19:48:42.099877Z  INFO servers: accept values: "application/rdap+json, application/rdap-x+json;extensions=\"foo bar\""
-2023-05-13T19:48:42.099902Z  INFO servers: redirecting to server on port 4000
-2023-05-13T19:48:42.100047Z DEBUG hyper::proto::h1::io: flushed 147 bytes
-2023-05-13T19:48:42.101783Z DEBUG hyper::proto::h1::io: parsed 3 headers
-2023-05-13T19:48:42.101811Z DEBUG hyper::proto::h1::conn: incoming body is empty
-2023-05-13T19:48:42.101921Z  INFO servers: Serving request from 127.0.0.1:56798
-2023-05-13T19:48:42.101940Z  INFO servers: accept values: "application/rdap+json, application/rdap-x+json;extensions=\"foo bar\""
-2023-05-13T19:48:42.101953Z  INFO servers: responding with an unuseful error
-2023-05-13T19:48:42.102096Z DEBUG hyper::proto::h1::io: flushed 207 bytes
-2023-05-13T19:48:42.103705Z DEBUG hyper::proto::h1::conn: read eof
-2023-05-13T19:48:42.103697Z DEBUG hyper::proto::h1::conn: read eof
+2023-08-18T17:48:09.701702Z  INFO servers: starting server on port 4000
+2023-08-18T17:48:09.701704Z  INFO servers: starting server on port 3000
+2023-08-18T17:48:14.997392Z  INFO servers: Serving request from 127.0.0.1:55004
+2023-08-18T17:48:14.997427Z  INFO servers: accept values: "application/rdap+json;q=0.9, application/rdap-x+json;extensions=\"foo bar\";q=1"
+2023-08-18T17:48:14.997439Z  INFO servers: redirecting to server on port 4000
+2023-08-18T17:48:14.998532Z  INFO servers: Serving request from 127.0.0.1:54938
+2023-08-18T17:48:14.998560Z  INFO servers: accept values: "application/rdap+json;q=0.9, application/rdap-x+json;extensions=\"foo bar\";q=1"
+2023-08-18T17:48:14.998573Z  INFO servers: responding with an unuseful error
 ```
 
 Preservation of query parameters is not a common feature of HTTP client and server libraries,

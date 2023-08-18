@@ -8,7 +8,7 @@ use reqwest::header;
 #[tokio::main]
 pub async fn main() {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
+        .with_max_level(tracing::Level::INFO)
         .init();
     tracing::info!("sending reqwest");
     let client = reqwest::Client::new();
@@ -16,7 +16,7 @@ pub async fn main() {
         .get("http://127.0.0.1:3000/ex1/domain/foo.example?foo=bar")
         .header(
             header::ACCEPT,
-            r#"application/rdap+json, application/rdap-x+json;extensions="foo bar""#,
+            r#"application/rdap+json;q=0.9, application/rdap-x+json;extensions="foo bar";q=1"#,
         )
         .send()
         .await
