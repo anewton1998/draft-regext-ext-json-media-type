@@ -53,7 +53,7 @@ async fn server(port: u32) {
 #[tokio::main]
 pub async fn main() {
     tracing_subscriber::fmt()
-        .with_max_level(tracing::Level::DEBUG)
+        .with_max_level(tracing::Level::INFO)
         .init();
     let mut join_set = JoinSet::new();
     join_set.spawn(async { server(3000).await });
