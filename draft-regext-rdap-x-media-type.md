@@ -165,6 +165,11 @@ Change controller: IETF
 
 Provisional Registration: No
 
+# Acknowledgements
+
+Pawel Kowalik provided ideas and feedbacks that have contributed to
+the content of this document.
+
 {backmatter}
 
 # Design Considerations
