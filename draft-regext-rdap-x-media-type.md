@@ -8,10 +8,10 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-newton-regext-rdap-x-media-type-01"
+value = "draft-newton-regext-rdap-x-media-type-02"
 stream = "IETF"
 status = "standard"
-date = 2023-08-29T00:00:00Z
+date = 2024-01-11T00:00:00Z
 
 [[author]]
 initials="A."
@@ -58,7 +58,7 @@ Here is an example:
 For readability, this document will refer to this media type, RDAP With Extensions,
 as RDAP-X.
 
-# Using The RDAP-X Media Type
+# Using The RDAP-X Media Type {#using}
 
 [@!RFC7480] specifies the usage of 'application/json', 'application/rdap+json' or
 both with HTTP Accept header. When using the media type defined by this document,
@@ -97,7 +97,18 @@ Nothing in this specification sidesteps or obviates the HTTP content negotiation
 in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower qvalue than
 any other media type, that is a signal not to use RDAP-X.
 
-# Usage in RDAP Links
+Likewise, nothing in this specification sidesteps or obviates the HTTP caching mechanisms
+defined in [@!RFC9110].
+
+Some RDAP extensions, such as [@?I-D.ietf-regext-rdap-openid], have other protocol elements
+passed from the client to the server, and the presence of these protocol elements may be
+used by servers to indicate a clients capability to handle the RDAP extension. This specification
+does not require the usage of those extensions identifiers in the extensions parameter,
+though clients SHOULD list the extension identifier in the extensions parameter when using
+other protocol elements of those extensions. Servers SHOULD NOT require the usage of extension
+identifiers in the extensions paramater when other extension protocol elements are used.
+
+# Usage in RDAP Links {#links}
 
 [@!RFC9083, section 4.2] defines a link structure used in RDAP.
 
@@ -130,6 +141,17 @@ no additional RDAP queries or response structures.
 
 The purpose of this RDAP extension is to allow servers to signal support for RDAP-X in
 `rdapConformance` arrays of responses to `/help` (aka "service discovery").
+
+# Security Considerations
+
+As stated in (#using), this specification does not override the protocol elements of
+RDAP security extensions, such as [@?I-D.ietf-regext-rdap-openid], nor does it override
+the protocol elements of other security features of HTTP.
+
+This specification does contrast with solutions using query parameters in that those
+solutions require servers to blindly copy query paramters into redirect URLs in
+situations where such copying could cause harm, such as copying an API key intended
+for one server into the redirect URL of another server.
 
 # IANA Considerations
 
@@ -272,6 +294,24 @@ but does not automatically preserve the query parameters.
 Preservation of query parameters is not a guaranteed feature of HTTP client and server libraries,
 whereas preservation of media types is common.
 
+### Referral Compatibility
+
+It is common in the RDAP ecosystem to link from one RDAP resource to another. These are typically
+conveyed in the link structure defined in [@?RFC9083, section 4.2] and use the "application/rdap+json"
+media type. One common usage is to link to a domain registration in a domain registrar from
+a domain registration in a domain registry.
+
+    {
+      "value" : "https://regy.example/domain/foo.example",
+      "rel" : "related",
+      "href" : "https://regr.example/domain/foo.example",
+      "type" : "application/rdap+json"
+    }
+
+Usage of the RDAP-X media type does not require clients to conduct further processing of these
+referrals, whereas a query parameter approach would require clients to process and deconflict
+any other query parameters if present.
+
 ### Architectual Violations
 
 As noted in [@?RFC3986], URI query parameters are meant to be part of the identity of the resource
@@ -288,7 +328,8 @@ Readers should note that protocol design is not a "priestly affair" in which arc
 violations are strictly forbidden. Every design decision is a trade-off. However, following
 the architecture of an ecosystem generally makes re-use of software and systems easier,
 and often eases the adoption of newer features in the future. When given the choice between
-two designs, the design that does not violate architecture should be preferred. 
+two designs, the design that does not violate architecture should be preferred when all
+other considerations are equal. 
 
 ## RDAP Extension Versioning
 
