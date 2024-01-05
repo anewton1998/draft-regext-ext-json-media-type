@@ -1,7 +1,7 @@
-use std::net::SocketAddr;
+use std::{collections::HashMap, net::SocketAddr};
 
 use axum::{
-    extract::ConnectInfo,
+    extract::{ConnectInfo, Query},
     http::StatusCode,
     response::{IntoResponse, Redirect},
     routing::get,
@@ -12,27 +12,41 @@ use tokio::task::JoinSet;
 
 /// This function will send a redirect to the server operating on port 4000.
 /// The redirect will be for a URL that will answer with RDAP.
-async fn domain_redirect(connect_info: ConnectInfo<SocketAddr>, headers: HeaderMap) -> Redirect {
+async fn domain_redirect(
+    connect_info: ConnectInfo<SocketAddr>,
+    headers: HeaderMap,
+    Query(params): Query<HashMap<String, String>>,
+) -> Redirect {
     tracing::info!(
         "[redirecting server] Serving request from {}",
         connect_info.0
+    );
+    tracing::info!(
+        "[redirecting server] received query parameters: {}",
+        get_query_param_names(&params)
     );
     let rdap_extensions = parse_extensions(headers.get("accept").unwrap().to_str().unwrap());
     rdap_extensions.iter().for_each(|extension| {
         tracing::info!("[redirecting server] client signaled RDAP extension '{extension}'")
     });
-    tracing::info!("[redirecting server] redirecting to server on port 4000");
-    Redirect::temporary("http://127.0.0.1:4000/ex2/domain/foo.example")
+    let redirect_url = "http://127.0.0.1:4000/ex2/domain/foo.example";
+    tracing::info!("[redirecting server] redirecting to {redirect_url}");
+    Redirect::temporary(redirect_url)
 }
 
 /// This function will send an RDAP answer (which is an RDAP error).
 async fn domain_answer(
     connect_info: ConnectInfo<SocketAddr>,
     headers: HeaderMap,
+    Query(params): Query<HashMap<String, String>>,
 ) -> impl IntoResponse {
     tracing::info!(
         "[authoritative server] Serving request from {}",
         connect_info.0
+    );
+    tracing::info!(
+        "[authoritative server] received query parameters: {}",
+        get_query_param_names(&params)
     );
     let rdap_extensions = parse_extensions(headers.get("accept").unwrap().to_str().unwrap());
     rdap_extensions.iter().for_each(|extension| {
@@ -78,6 +92,14 @@ pub async fn main() {
     while let Some(join) = join_set.join_next().await {
         tracing::info!("Tasks finished for {join:?}");
     }
+}
+
+fn get_query_param_names(query_params: &HashMap<String, String>) -> String {
+    query_params
+        .iter()
+        .map(|(k, _v)| format!("'{k}'"))
+        .collect::<Vec<String>>()
+        .join(", ")
 }
 
 fn parse_extensions(accept_header: &str) -> Vec<String> {

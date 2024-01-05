@@ -235,8 +235,8 @@ be readily observed in currently deployed RDAP servers:
 curl -v https://rdap-bootstrap.arin.net/bootstrap/autnum/2830?extension=fizzbuzz    
 ```
 
-To further demonstrate that query parameters do not survive redirects but that media types
-do survive redirects, consider the code found [here](https://github.com/anewton1998/draft-regext-ext-json-media-type).
+To further demonstrate that query parameters do not automatically survive redirects but that media types
+do, consider the code found [here](https://github.com/anewton1998/draft-regext-ext-json-media-type).
 This code consists of a simple client and a simple server. The client sets both a new
 media type and query parameters. The servers listens on two ports, redirecting the client
 from a URL on the first port to a URL on the second port.
@@ -245,27 +245,31 @@ Here is the output of the client. It shows that the query parameters are not aut
 preserved but that the media type is automatically preserved.
 
 ```
-2023-08-18T17:48:14.949271Z  INFO client: sending reqwest
-2023-08-18T17:48:14.998895Z  INFO client: returned content type: "application/rdap-x;extensions=\"foo bar\""
-2023-08-18T17:48:14.998929Z  INFO client: status code is 418 I'm a teapot
-2023-08-18T17:48:14.998999Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
+2024-01-05T11:15:34.380989Z  INFO client: sending reqwest to http://127.0.0.1:3000/ex1/domain/foo.example?foo&bar
+2024-01-05T11:15:34.431386Z  INFO client: returned content type: "application/rdap-x;extensions=\"foo bar\""
+2024-01-05T11:15:34.431413Z  INFO client: status code is 418 I'm a teapot
+2024-01-05T11:15:34.431476Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
 ```
 
 Here is the output of the server. It show that the client, upon redirect, automatically sends the media type
 but does not automatically preserve the query parameters.
 
 ```
-2023-08-18T17:48:09.701702Z  INFO servers: starting server on port 4000
-2023-08-18T17:48:09.701704Z  INFO servers: starting server on port 3000
-2023-08-18T17:48:14.997392Z  INFO servers: Serving request from 127.0.0.1:55004
-2023-08-18T17:48:14.997427Z  INFO servers: accept values: "application/rdap+json;q=0.9, application/rdap-x+json;extensions=\"foo bar\";q=1"
-2023-08-18T17:48:14.997439Z  INFO servers: redirecting to server on port 4000
-2023-08-18T17:48:14.998532Z  INFO servers: Serving request from 127.0.0.1:54938
-2023-08-18T17:48:14.998560Z  INFO servers: accept values: "application/rdap+json;q=0.9, application/rdap-x+json;extensions=\"foo bar\";q=1"
-2023-08-18T17:48:14.998573Z  INFO servers: responding with an unuseful error
+2024-01-05T11:15:31.071936Z  INFO servers: starting server on port 3000
+2024-01-05T11:15:31.071961Z  INFO servers: starting server on port 4000
+2024-01-05T11:15:34.429595Z  INFO servers: [redirecting server] Serving request from 127.0.0.1:60260
+2024-01-05T11:15:34.429648Z  INFO servers: [redirecting server] received query parameters: 'bar', 'foo'
+2024-01-05T11:15:34.429682Z  INFO servers: [redirecting server] client signaled RDAP extension 'foo'
+2024-01-05T11:15:34.429693Z  INFO servers: [redirecting server] client signaled RDAP extension 'bar'
+2024-01-05T11:15:34.429704Z  INFO servers: [redirecting server] redirecting to http://127.0.0.1:4000/ex2/domain/foo.example
+2024-01-05T11:15:34.430940Z  INFO servers: [authoritative server] Serving request from 127.0.0.1:40840
+2024-01-05T11:15:34.430967Z  INFO servers: [authoritative server] received query parameters:
+2024-01-05T11:15:34.430983Z  INFO servers: [authoritative server] client signaled RDAP extension 'foo'
+2024-01-05T11:15:34.430989Z  INFO servers: [authoritative server] client signaled RDAP extension 'bar'
+2024-01-05T11:15:34.430995Z  INFO servers: [authoritative server] responding with an unuseful error
 ```
 
-Preservation of query parameters is not a common feature of HTTP client and server libraries,
+Preservation of query parameters is not a guaranteed feature of HTTP client and server libraries,
 whereas preservation of media types is common.
 
 ### Architectual Violations

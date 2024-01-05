@@ -10,10 +10,11 @@ pub async fn main() {
     tracing_subscriber::fmt()
         .with_max_level(tracing::Level::INFO)
         .init();
-    tracing::info!("sending reqwest");
+    let url = "http://127.0.0.1:3000/ex1/domain/foo.example?foo&bar";
+    tracing::info!("sending reqwest to {url}");
     let client = reqwest::Client::new();
     let res = client
-        .get("http://127.0.0.1:3000/ex1/domain/foo.example?foo=bar")
+        .get(url)
         .header(
             header::ACCEPT,
             r#"application/rdap+json;q=0.9, application/rdap-x+json;extensions="foo bar";q=1"#,
