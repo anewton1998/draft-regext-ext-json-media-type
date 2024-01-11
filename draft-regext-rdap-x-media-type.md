@@ -102,7 +102,7 @@ defined in [@!RFC9110].
 
 Some RDAP extensions, such as [@?I-D.ietf-regext-rdap-openid], have other protocol elements
 passed from the client to the server, and the presence of these protocol elements may be
-used by servers to indicate a clients capability to handle the RDAP extension. This specification
+used by servers to determine a clients capability to handle the RDAP extension. This specification
 does not require the usage of those extensions identifiers in the extensions parameter,
 though clients SHOULD list the extension identifier in the extensions parameter when using
 other protocol elements of those extensions. Servers SHOULD NOT require the usage of extension
@@ -149,7 +149,7 @@ RDAP security extensions, such as [@?I-D.ietf-regext-rdap-openid], nor does it o
 the protocol elements of other security features of HTTP.
 
 This specification does contrast with solutions using query parameters in that those
-solutions require servers to blindly copy query paramters into redirect URLs in
+solutions require servers to blindly copy query parameters into redirect URLs in
 situations where such copying could cause harm, such as copying an API key intended
 for one server into the redirect URL of another server.
 
@@ -292,7 +292,7 @@ but does not automatically preserve the query parameters.
 ```
 
 Preservation of query parameters is not a guaranteed feature of HTTP client and server libraries,
-whereas preservation of media types is common.
+whereas preservation of media types is.
 
 ### Referral Compatibility
 
