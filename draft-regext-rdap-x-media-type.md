@@ -102,7 +102,7 @@ defined in [@!RFC9110].
 
 Some RDAP extensions, such as [@?I-D.ietf-regext-rdap-openid], have other protocol elements
 passed from the client to the server, and the presence of these protocol elements may be
-used by servers to determine a clients capability to handle the RDAP extension. This specification
+used by servers to determine a client's capability to handle the RDAP extension. This specification
 does not require the usage of those extensions identifiers in the extensions parameter,
 though clients SHOULD list the extension identifier in the extensions parameter when using
 other protocol elements of those extensions. Servers SHOULD NOT require the usage of extension
