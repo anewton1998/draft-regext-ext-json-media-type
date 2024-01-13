@@ -83,7 +83,7 @@ the RDAP-X media type using only extensions implemented by the server. This beha
 is backward compatible as RDAP clients must ignore unknown extensions as specified by
 [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
 
-When the RDAP-X media type is used in the `content-type header`, the
+When the RDAP-X media type is used in the `content-type` header, the
 values in the media type's extension parameter SHOULD match the values in the `rdapConformance`
 array in the return JSON. When there is a mismatch between extension parameters and
 the `rdapConformance` array, clients SHOULD give preference to the `rdapConformance`
@@ -189,7 +189,7 @@ Provisional Registration: No
 
 # Acknowledgements
 
-Pawel Kowalik and James Mitchel have provided ideas and feedbacks that have contributed to
+Pawel Kowalik and James Mitchell have provided ideas and feedbacks that have contributed to
 the content of this document.
 
 {backmatter}
@@ -200,12 +200,12 @@ Server implementers may want to consider using the `vary` header depending on th
 behavior desired of shared caches (i.e. middleboxes, not client caches).
 
 Consider the following scenario where user Bob and user Alice send queries to the same
-RDAP server that is routed through a middlebox network element implementing a shared HTTP caceh.
+RDAP server that is routed through a middlebox network element implementing a shared HTTP cache.
 
 User Bob sends a query for the domain `example.com`
-(http://regy.example/domain/example.com) without RDAP-x. The `accept` header sent
+(http://regy.example/domain/example.com) without RDAP-X. The `accept` header sent
 for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.  
-User Alice sends a query for the same domain, however her client uses RDAP-X. The `accept`
+User Alice later sends a query for the same domain, however her client uses RDAP-X. The `accept`
 header returned by Alice might be `accept: application/rdap-x+json, application/rdap+json`.
 
 If no `vary` header is set in the response for these queries, the shared cache will compare only
@@ -214,7 +214,7 @@ the same answer. In other words, since both queried `http://regy.example/domain/
 cache would return the answer of the first query to the second query and all other subsequent queries
 until the item expired out of the cache.
 
-If server implementers do not desire this behaviour and would rather caches consider each query
+If server implementers do not desire this behaviour and would signal that caches consider each query
 separately, servers should also return a `vary: accept` header to inform the cache that the `accept`
 header should also be considered when processing cache items. Server implementers should also
 consult [@!RFC9110] regarding caching and other uses of the `vary` header.
