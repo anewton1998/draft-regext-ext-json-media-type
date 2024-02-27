@@ -8,10 +8,10 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-newton-regext-rdap-x-media-type-02"
+value = "draft-ietf-regext-rdap-x-media-type-00"
 stream = "IETF"
 status = "standard"
-date = 2024-01-11T00:00:00Z
+date = 2024-02-27T00:00:00Z
 
 [[author]]
 initials="A."
