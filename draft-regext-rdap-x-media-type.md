@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-00"
 stream = "IETF"
 status = "standard"
-date = 2024-02-27T00:00:00Z
+date = 2024-08-20T00:00:00Z
 
 [[author]]
 initials="A."
@@ -42,8 +42,26 @@ type with RDAP.
 # Background
 
 [@!RFC7480] defines the 'application/rdap+json' media type to be used with RDAP. This
-document defines a new media type to be used in conjuction with the current media type
+document defines a new media type to be used in conjunction with the current media type
 when an RDAP extension needs to be described during HTTP content negotiation.
+
+Though there maybe other purposes, the usage of this media type enables an RDAP
+client to signal to an RDAP server the list of RDAP extensions supported by that client.
+For example, an RDAP client that supports the "foo" extension may use this mechanism
+as a signal to an RDAP server, thus allowing the server to serve data using the "foo"
+extension only when it can be assured the client can understand it.
+
+By using this method, there is no need for every RDAP extension to define their own unique
+signaling mechanism. Additionally, this method is designed to be backwards compatible
+with the deployed RDAP ecosystem (see (#design_considerations) for further information).
+
+## Document Terms
+
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
+"MAY", and "OPTIONAL" in this document are to be interpreted as
+described in [@!BCP14] when, and only when, they
+appear in all capitals, as shown here.
 
 # RDAP-X: The RDAP With Extensions Media Type
 
@@ -219,7 +237,7 @@ separately, servers should also return a `vary: accept` header to inform the cac
 header should also be considered when processing cache items. Server implementers should also
 consult [@!RFC9110] regarding caching and other uses of the `vary` header.
 
-# Design Considerations
+# Design Considerations {#design_consideration}
 
 ## Not Reusing the Existing Media Type
 
@@ -285,7 +303,7 @@ curl -v https://rdap-bootstrap.arin.net/bootstrap/autnum/2830?extension=fizzbuzz
 To further demonstrate that query parameters do not automatically survive redirects but that media types
 do, consider the code found [here](https://github.com/anewton1998/draft-regext-ext-json-media-type).
 This code consists of a simple client and a simple server. The client sets both a new
-media type and query parameters. The servers listens on two ports, redirecting the client
+media type and query parameters. The servers listen on two ports, redirecting the client
 from a URL on the first port to a URL on the second port.
 
 Here is the output of the client. It shows that the query parameters are not automatically
@@ -298,7 +316,7 @@ preserved but that the media type is automatically preserved.
 2024-01-05T11:15:34.431476Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
 ```
 
-Here is the output of the server. It show that the client, upon redirect, automatically sends the media type
+Here is the output of the server. It shows that the client, upon redirect, automatically sends the media type
 but does not automatically preserve the query parameters.
 
 ```
@@ -337,7 +355,7 @@ Usage of the RDAP-X media type does not require clients to conduct further proce
 referrals, whereas a query parameter approach would require clients to process and deconflict
 any other query parameters if present.
 
-### Architectual Violations
+### Architectural Violations
 
 As noted in [@?RFC3986], URI query parameters are meant to be part of the identity of the resource
 being identified by a URI and pointed to by the location of a URL. RDAP extensions change
