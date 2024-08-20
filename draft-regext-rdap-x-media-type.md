@@ -8,7 +8,7 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-00"
+value = "draft-ietf-regext-rdap-x-media-type-01"
 stream = "IETF"
 status = "standard"
 date = 2024-08-20T00:00:00Z
@@ -35,7 +35,8 @@ email = "jasdips@arin.net"
 
 This document defines a media type for RDAP that can be used to describe RDAP content
 with RDAP extensions. Additionally, this document describes the usage of this media
-type with RDAP.
+type with RDAP for the purposes of signalling RDAP extensions during content
+negotiation.
 
 {mainmatter}
 
@@ -237,7 +238,7 @@ separately, servers should also return a `vary: accept` header to inform the cac
 header should also be considered when processing cache items. Server implementers should also
 consult [@!RFC9110] regarding caching and other uses of the `vary` header.
 
-# Design Considerations {#design_consideration}
+# Design Considerations {#design_considerations}
 
 ## Not Reusing the Existing Media Type
 
