@@ -42,7 +42,7 @@ negotiation.
 
 # Background
 
-[@!RFC7480] defines the 'application/rdap+json' media type to be used with RDAP. This
+[@!RFC7480] defines the "application/rdap+json" media type to be used with RDAP. This
 document defines a new media type to be used in conjunction with the current media type
 when an RDAP extension needs to be described during HTTP content negotiation.
 
@@ -66,7 +66,7 @@ appear in all capitals, as shown here.
 
 # RDAP-X: The RDAP With Extensions Media Type
 
-The media type defined by this document is 'application/rdap-x+json'. This media
+The media type defined by this document is "application/rdap-x+json". This media
 type has a parameter of "extensions" which is a whitespace-separated list of RDAP
 extensions as defined in the IANA RDAP Extensions registry.
 
@@ -79,9 +79,9 @@ as RDAP-X.
 
 # Using The RDAP-X Media Type {#using}
 
-[@!RFC7480] specifies the usage of 'application/json', 'application/rdap+json' or
-both with HTTP `accept` header. When using the media type defined by this document,
-the 'application/rdap+json' media type MUST also be used in the `accept` header.
+[@!RFC7480] specifies the usage of "application/json", "application/rdap+json" or
+both with HTTP "accept" header. When using the media type defined by this document,
+the "application/rdap+json" media type MUST also be used in the "accept" header.
 
 An example:
 
@@ -89,11 +89,11 @@ An example:
         application/rdap-x+json;extensions="rdap_level_0 rdapx fred";q=1
     
 When a server is programmed to understand the RDAP-X media type,
-it SHOULD respond with this media type in the `content-type` header. By doing so,
+it SHOULD respond with this media type in the "content-type" header. By doing so,
 clients will be able to detect if the server recognizes the media type. Otherwise,
-the server will use the 'application/rdap+json' media type signalling to the client
+the server will use the "application/rdap+json" media type signalling to the client
 that the RDAP-X media type is not recognized by the server.
-This updates the usage of the `content-type` header with RDAP defined in [@!RFC7480],
+This updates the usage of the "content-type" header with RDAP defined in [@!RFC7480],
 but this usage is backwards-compatible.
 
 If both a client and server support the RDAP-X media type, and the client requests
@@ -102,13 +102,13 @@ the RDAP-X media type using only extensions implemented by the server. This beha
 is backwards-compatible as RDAP clients must ignore unknown extensions as specified by
 [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
 
-When the RDAP-X media type is used in the `content-type` header, the
-values in the media type's "extensions" parameter SHOULD match the values in the `rdapConformance`
+When the RDAP-X media type is used in the "content-type" header, the
+values in the media type's "extensions" parameter SHOULD match the values in the "rdapConformance"
 array in the returned JSON. When there is a mismatch between the "extensions" parameter and
-the `rdapConformance` array, clients SHOULD give preference to the `rdapConformance`
+the "rdapConformance" array, clients SHOULD give preference to the "rdapConformance"
 array.
 
-Just as servers should not put extensions into the `rdapConformance` array for which
+Just as servers should not put extensions into the "rdapConformance" array for which
 they do not support, servers SHOULD NOT list extensions in the RDAP-X media type for
 which they do not support.
 
@@ -117,7 +117,7 @@ in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower q value 
 any other media type, that is a signal not to use RDAP-X.
 
 Likewise, nothing in this specification sidesteps or obviates the HTTP caching mechanisms
-defined in [@!RFC9110]. Further advice on the `vary` header can be found in (#vary_header).
+defined in [@!RFC9110]. Further advice on the "vary" header can be found in (#vary_header).
 
 Some RDAP extensions, such as [@?RFC9560], have other protocol elements
 passed from the client to the server, and the presence of these protocol elements may be
@@ -149,7 +149,7 @@ Servers MAY use the RDAP-X media type in the type attribute if a client
 has negotiated content with the server using the RDAP-X media type, 
 the resource referenced by the URI matches the RDAP-X media type, and
 the resource referenced by the URI is served by a server compliant with this specification.
-Otherwise, use of the 'application/rdap+json' media type is RECOMMENDED when the URI
+Otherwise, use of the "application/rdap+json" media type is RECOMMENDED when the URI
 references RDAP resources. 
 
 # RDAP-X Extension
@@ -159,7 +159,7 @@ characters are not allowed in RDAP extension identifiers). This RDAP extension d
 no additional RDAP queries or response structures.
 
 The purpose of this RDAP extension is to allow servers to signal support for RDAP-X in
-`rdapConformance` arrays of responses to `/help` (aka "service discovery").
+"rdapConformance" arrays of responses to "/help" (aka "service discovery").
 
 # Security Considerations
 
@@ -218,29 +218,29 @@ the content of this document.
 
 # Using the Vary Header {#vary_header}
 
-Server implementers may want to consider using the `vary` header depending on the caching
+Server implementers may want to consider using the "vary" header depending on the caching
 behavior desired of shared caches (i.e. middleboxes, not client caches).
 
 Consider the following scenario where user Bob and user Alice send queries to the same
 RDAP server that is routed through a middlebox network element implementing a shared HTTP cache.
 
-User Bob sends a query for the domain `example.com`
-(http://regy.example/domain/example.com) without RDAP-X. The `accept` header sent
-for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.  
+User Bob sends a query for the domain "example.com"
+(http://regy.example/domain/example.com) without RDAP-X. The "accept" header sent
+for Bob's query would be "accept: application/rdap+json" or "accept: application/json".
 
-User Alice later sends a query for the same domain, however her client uses RDAP-X. The `accept`
-header sent for Alice's query might be `accept: application/rdap-x+json, application/rdap+json`.
+User Alice later sends a query for the same domain, however her client uses RDAP-X. The "accept"
+header sent for Alice's query might be "accept: application/rdap-x+json, application/rdap+json".
 
-If no `vary` header is set in the response for these queries, the shared cache will compare only
+If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
-the same answer. In other words, since both queried `http://regy.example/domain/example.com` the shared
+the same answer. In other words, since both queried "http://regy.example/domain/example.com" the shared
 cache would return the answer of the first query to the second query and all other subsequent queries
 until the item expired out of the cache.
 
 If server implementers do not desire this behavior and would signal that caches consider each query
-separately, servers should also return a `vary: accept` header to inform the cache that the `accept`
+separately, servers should also return a "vary: accept" header to inform the cache that the "accept"
 header should also be considered when processing cache items. Server implementers should also
-consult [@!RFC9110] regarding caching and other uses of the `vary` header.
+consult [@!RFC9110] regarding caching and other uses of the "vary" header.
 
 # Design Considerations {#design_considerations}
 
@@ -248,7 +248,7 @@ consult [@!RFC9110] regarding caching and other uses of the `vary` header.
 
 [@?RFC6838, section 4.3] strongly discourages the creation of new parameters on existing
 media types to enable new features. As RDAP has always had extensions, it could be argued
-that adding an "extensions" parameter to the existing 'application/rdap+json' media type
+that adding an "extensions" parameter to the existing "application/rdap+json" media type
 is not adding a new feature to RDAP. However, the opposite could be argued that adding
 the capability for clients to signal desired RDAP extensions is a new feature.
 
@@ -345,7 +345,7 @@ whereas preservation of media types is.
 ### Referral Compatibility
 
 It is common in the RDAP ecosystem to link from one RDAP resource to another. These are typically
-conveyed in the link structure defined in [@?RFC9083, section 4.2] and use the 'application/rdap+json'
+conveyed in the link structure defined in [@?RFC9083, section 4.2] and use the "application/rdap+json"
 media type. One common usage is to link to a domain registration in a domain registrar from
 a domain registration in a domain registry.
 
@@ -383,26 +383,26 @@ other considerations are equal.
 
 It is beyond the scope of this document to define the versioning of RDAP extensions.
 However, there is design intent to allow the use of explicitly versioned RDAP extension
-identifiers where they are also compatible with the identifiers used in the `rdapConformance`
+identifiers where they are also compatible with the identifiers used in the "rdapConformance"
 array of RDAP.
 
 Consider the scenario in which the IETF decides that RDAP extension identifiers suffixed with
-the character string `__V` denotes RDAP extensions versioned using a semantic versioning
-scheme. In this scenario, the RDAP extension identifier `fizzbuzz__V` is registered with IANA.
-The `__V` suffix indicates that when the identifier is used in the `rdapConformance` array,
+the character string "__V" denotes RDAP extensions versioned using a semantic versioning
+scheme. In this scenario, the RDAP extension identifier "fizzbuzz__V" is registered with IANA.
+The "__V" suffix indicates that when the identifier is used in the "rdapConformance" array,
 it must appear appended with a character string denoting the semantic version of the extension.
 
-For example, `fizzbuzz__V_2_1` denotes version 2.1 of the fizzbuzz extension. In RDAP JSON,
+For example, "fizzbuzz__V_2_1" denotes version 2.1 of the fizzbuzz extension. In RDAP JSON,
 the conformance would appear as:
 
 ```
-"rdapConformance" : [
+"rdapConformance": [
     "rdap_level_0", 
     "fizzbuzz__V_2_1" 
 ]    
 ```
 
-The usage with the `rdap-x` media type would be:
+The usage with the "rdap-x" media type would be:
 
 ```
 application/rdap-x+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
