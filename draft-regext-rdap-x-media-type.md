@@ -112,6 +112,15 @@ Just as servers should not put extensions into the "rdapConformance" array for w
 they do not support, servers SHOULD NOT list extensions in the RDAP-X media type for
 which they do not support.
 
+The contents of the "extensions" parameter mirrors the content of the
+"rdapConformance" array in server responses. This includes the identifier `rdap_level_0`, which is not
+an extension identifier by an identifier for the base RDAP specifications. Servers MUST
+follow the same rules for placing `rdap_level_0` in the content of the "extensions"
+parameter and the "rdapConformance" array. Clients SHOULD interpret an "extensions"
+parameter without `rdap_level_0` or one of its successor identifiers (e.g. `rdap_level_1`)
+in the same manner as the interpretation of the "rdapConformance" array without
+`rdap_level_0` or one of its successors.
+
 Nothing in this specification sidesteps or obviates the HTTP content negotiation defined
 in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower q value than
 any other media type, that is a signal not to use RDAP-X.
@@ -126,6 +135,117 @@ does not require the usage of those extension identifiers in the "extensions" pa
 though clients SHOULD list the extension identifier in the "extensions" parameter when using
 other protocol elements of those extensions. Servers SHOULD NOT require the usage of extension
 identifiers in the "extensions" parameter when other extension protocol elements are used.
+
+## Examples
+
+The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RFC9110].
+
+### Classic Negotiation
+
+This example demonstrates the negotiation of the "applicaton/rdap+json" media type
+as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
+the negotiation in which a client does not support RDAP-X but a server does support
+RDAP-X.
+
+Client Request:
+
+    GET /help HTTP/1.1
+    accept: application/rdap+json
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap+json
+
+    { "rdapConformance" : [ "rdap_level_0" ],
+      "notices" : [
+        { "description" : [ "my content includes a trailing CRLF" ] } ] }
+
+
+### RDAP-X Negotiation
+
+In this example, both the client and server support RDAP-X and a fictional
+extension of "foo".
+
+Client Request:
+
+    GET /help HTTP/1.1
+    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
+      "notices" : [
+        { "description" : [ "my content includes a trailing CRLF" ] } ] }
+
+### No Server Support Negotiation
+
+In this example, only the client supports RDAP-X, along with a fictional
+extension of "foo".
+
+Client Request:
+
+    GET /help HTTP/1.1
+    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap+json
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
+      "notices" : [
+        { "description" : [ "my content includes a trailing CRLF" ] } ] }
+
+### Differing Extension Negotiation
+
+In this example, both the client and server support RDAP-X. The client
+supports the extensions "foo" and "bar" while the server only support "foo".
+
+Client Request:
+
+    GET /help HTTP/1.1
+    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo bar"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
+      "notices" : [
+        { "description" : [ "my content includes a trailing CRLF" ] } ] }
+
+### Extension Versioning and Meta-data {#versioning}
+
+For scenarios where the "versioning" extension, as defined by [@?I-D.ietf-regext-rdap-versioning],
+is used, the extension identifiers in the client request may not be exact or case-insensitive matches for the
+extension identifiers in the server response (unlike scenarios where the "versioning" extension is not used).
+
+Client Request:
+
+    GET /domain/example.com HTTP/1.1
+    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx versioning_0_2"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx versioning"
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx", "versioning" ],
+      "objectClassName": "domain",
+      "ldhName": "example.com",
+      "versioning": [ {
+        "extension": "versioning",
+        "type": "semantic",
+        "version": "versioning_0_2" } ]
+    }
+
+Servers might also use the "versioning" extension to describe meta-data about
+supported extensions even if the servers do not explicitly support extension versioning.
 
 # Usage in RDAP Links {#links}
 
@@ -151,6 +271,55 @@ the resource referenced by the URI matches the RDAP-X media type, and
 the resource referenced by the URI is served by a server compliant with this specification.
 Otherwise, use of the "application/rdap+json" media type is RECOMMENDED when the URI
 references RDAP resources. 
+
+## Example With RDAP-X Negotiation
+
+In this example, both the client and server support RDAP-X and the server has opted
+to return links with the RDAP-X media type in a domain query.
+
+Client Request:
+
+    GET /domain/example.com HTTP/1.1
+    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx"
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
+      "objectClassName": "domain",
+      "ldhName" : "example.com",
+      "links": [ {
+        "value": "https://regy.example.net/domain/example.com",
+        "rel": "self",
+        "href": "https://regy.example.net/domain/example.com",
+        "type": "application/rdap-x+json;extensions=\"rdap_level_0 rdapx\"" } ]
+    }
+
+## Example Without RDAP-X Negotiation
+
+In this example, the client does not support RDAP-X. Though the server may support
+RDAP-X, it will not signal RDAP-X because the client does not request it.
+
+Client Request:
+
+    GET /domain/example.com HTTP/1.1
+    accept: application/rdap+json
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap+json
+
+    { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
+      "ldhName" : "example.com",
+      "links": [ {
+        "value": "https://regy.example.net/domain/example.com",
+        "rel": "self",
+        "href": "https://regy.example.net/domain/example.com",
+        "type": "application/rdap+json" } ]
+    }
 
 # RDAP-X Extension
 
@@ -262,7 +431,7 @@ As servers are required to handle multiple media types according to [@!RFC7480] 
 it therefore seems reasonable to conclude that defining a new media type for use with
 the existing media type is best to preserve backward compatibility.
 
-## Query Parameters Considered Harmful
+## Inappropriate use of Query Parameters
 
 Another design approach to communicating RDAP extensions from the client to the
 server would be the use of URI query parameters:
@@ -270,6 +439,11 @@ server would be the use of URI query parameters:
 ```
 https://rdap.example/domain/foo.example?extensions=fizzbuzz  
 ```
+
+However, there are a few problems with using query parameters for this scenario.
+Some of these problems are specific to RDAP and are also documented in
+[@?I-D.ietf-regext-rdap-extensions]. The following sections also describe the
+problems.
 
 ### Copy and Paste
 
@@ -379,36 +553,3 @@ and often eases the adoption of newer features in the future. When given the cho
 two designs, the design that does not violate architecture should be preferred when all
 other considerations are equal. 
 
-## RDAP Extension Versioning
-
-It is beyond the scope of this document to define the versioning of RDAP extensions.
-However, there is design intent to allow the use of explicitly versioned RDAP extension
-identifiers where they are also compatible with the identifiers used in the "rdapConformance"
-array of RDAP.
-
-Consider the scenario in which the IETF decides that RDAP extension identifiers suffixed with
-the character string "__V" denotes RDAP extensions versioned using a semantic versioning
-scheme. In this scenario, the RDAP extension identifier "fizzbuzz__V" is registered with IANA.
-The "__V" suffix indicates that when the identifier is used in the "rdapConformance" array,
-it must appear appended with a character string denoting the semantic version of the extension.
-
-For example, "fizzbuzz__V_2_1" denotes version 2.1 of the fizzbuzz extension. In RDAP JSON,
-the conformance would appear as:
-
-```
-"rdapConformance": [
-    "rdap_level_0", 
-    "fizzbuzz__V_2_1" 
-]    
-```
-
-The usage with the "rdap-x" media type would be:
-
-```
-application/rdap-x+json;extensions="rdap_level_0 fizzbuzz__V_2_1"    
-```
-
-Readers should note that this scenario is provided to show design intent and is not
-a full-fledged extension versioning design. Additionally, the new media type
-defined in this document has utility with existing, opaquely versioned RDAP extensions
-and does not depend on the definition of a new versioning scheme for RDAP extensions.
