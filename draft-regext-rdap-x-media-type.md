@@ -102,6 +102,12 @@ the RDAP-X media type using only extensions implemented by the server. This beha
 is backwards-compatible as RDAP clients must ignore unknown extensions as specified by
 [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
 
+Likewise, if a server is required to use an extension in a response that was not
+requested by the client, the server SHOULD respond as if the client had requested
+the extension. This behavior is backwards-compatible as RDAP clients must ignore unknown
+extensions as specified by [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status
+code is NOT RECOMMENDED.
+
 When the RDAP-X media type is used in the "content-type" header, the
 values in the media type's "extensions" parameter SHOULD match the values in the "rdapConformance"
 array in the returned JSON. When there is a mismatch between the "extensions" parameter and
@@ -113,13 +119,13 @@ they do not support, servers SHOULD NOT list extensions in the RDAP-X media type
 which they do not support.
 
 The contents of the "extensions" parameter mirrors the content of the
-"rdapConformance" array in server responses. This includes the identifier `rdap_level_0`, which is not
+"rdapConformance" array in server responses. This includes the identifier "rdap_level_0", which is not
 an extension identifier by an identifier for the base RDAP specifications. Servers MUST
-follow the same rules for placing `rdap_level_0` in the content of the "extensions"
+follow the same rules for placing "rdap_level_0" in the content of the "extensions"
 parameter and the "rdapConformance" array. Clients SHOULD interpret an "extensions"
-parameter without `rdap_level_0` or one of its successor identifiers (e.g. `rdap_level_1`)
+parameter without "rdap_level_0" or one of its successor identifiers (e.g. "rdap_level_1")
 in the same manner as the interpretation of the "rdapConformance" array without
-`rdap_level_0` or one of its successors.
+"rdap_level_0" or one of its successors.
 
 Nothing in this specification sidesteps or obviates the HTTP content negotiation defined
 in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower q value than
@@ -157,7 +163,7 @@ Server Response:
     HTTP/1.1 200 OK
     content-type: application/rdap+json
 
-    { "rdapConformance" : [ "rdap_level_0" ],
+    { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
@@ -196,7 +202,7 @@ Server Response:
     HTTP/1.1 200 OK
     content-type: application/rdap+json
 
-    { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
+    { "rdapConformance" : [ "rdap_level_0", "foo" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
@@ -224,6 +230,9 @@ Server Response:
 For scenarios where the "versioning" extension, as defined by [@?I-D.ietf-regext-rdap-versioning],
 is used, the extension identifiers in the client request may not be exact or case-insensitive matches for the
 extension identifiers in the server response (unlike scenarios where the "versioning" extension is not used).
+That is, the extension identifiers used by the client have prepended versioning information, but the
+extension identifiers returned by the server do not have prepended versioning information (such information
+is in the "versioning" JSON).
 
 Client Request:
 
@@ -431,7 +440,7 @@ As servers are required to handle multiple media types according to [@!RFC7480] 
 it therefore seems reasonable to conclude that defining a new media type for use with
 the existing media type is best to preserve backward compatibility.
 
-## Inappropriate use of Query Parameters
+## Inappropriate Use of Query Parameters
 
 Another design approach to communicating RDAP extensions from the client to the
 server would be the use of URI query parameters:
