@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-02"
 stream = "IETF"
 status = "standard"
-date = 2024-09-20T00:00:00Z
+date = 2024-10-17T00:00:00Z
 
 [[author]]
 initials="A."
