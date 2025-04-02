@@ -1,5 +1,5 @@
 %%%
-Title = "An RDAP With Extensions Media Type"
+Title = "Extensions Parameter for the RDAP Media Type"
 area = "Applications and Real-Time Area (ART)"
 workgroup = "Registration Protocols Extensions (regext)"
 abbrev = "rdap-x"
@@ -8,7 +8,7 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-02"
+value = "draft-ietf-regext-rdap-x-media-type-03"
 stream = "IETF"
 status = "standard"
 date = 2024-10-17T00:00:00Z
@@ -33,7 +33,7 @@ email = "jasdips@arin.net"
 
 .# Abstract
 
-This document defines a media type for RDAP that can be used to describe RDAP content
+This document defines a new parameter for the RDAP media type that can be used to describe RDAP content
 with RDAP extensions. Additionally, this document describes the usage of this media
 type with RDAP for the purposes of signalling RDAP extensions during content
 negotiation.
@@ -43,14 +43,14 @@ negotiation.
 # Background
 
 [@!RFC7480] defines the "application/rdap+json" media type to be used with RDAP. This
-document defines a new media type to be used in conjunction with the current media type
+document defines a new parameter for this media type
 when an RDAP extension needs to be described during HTTP content negotiation.
 
-Though there maybe other purposes, the usage of this media type enables an RDAP
+This parameter enables an RDAP
 client to signal to an RDAP server the list of RDAP extensions supported by that client.
 For example, an RDAP client that supports the "foo" extension may use this mechanism
-as a signal to an RDAP server, thus allowing the server to serve data using the "foo"
-extension only when it can be assured the client can understand it.
+as a signal to an RDAP server, thus allowing the server to respond with data using the "foo"
+extension inside an RDAP response only when it can be assured the client can understand the extension.
 
 By using this method, there is no need for every RDAP extension to define their own unique
 signaling mechanism. Additionally, this method is designed to be backwards-compatible
@@ -64,72 +64,67 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 described in [@!BCP14] when, and only when, they
 appear in all capitals, as shown here.
 
-# RDAP-X: The RDAP With Extensions Media Type
+# The RDAP Media Type With Extensions Parameter
 
-The media type defined by this document is "application/rdap-x+json". This media
-type has a parameter of "extensions" which is a whitespace-separated list of RDAP
+The RDAP media type, "application/rdap-x+json", may have an optional parameter named "extensions". 
+This parameter is a whitespace-separated list of RDAP
 extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
 
-    application/rdap-x+json;extensions="rdap_level_0 fred"
+    application/rdap+json;extensions="rdap_level_0 fred"
     
-For readability, this document will refer to this media type, RDAP With Extensions,
-as RDAP-X.
 
 # Using The RDAP-X Media Type {#using}
 
 [@!RFC7480] specifies the usage of "application/json", "application/rdap+json" or
-both with HTTP "accept" header. When using the media type defined by this document,
-the "application/rdap+json" media type MUST also be used in the "accept" header.
+both with HTTP "accept" header. The "extensions" parameter may only be used with
+the "application/rdap+json" media type.
 
-An example:
+This is an example of the "accept" header using the RDAP media type with an "extensions" parameter:
 
-    accept: application/rdap+json;q=0.9, 
-        application/rdap-x+json;extensions="rdap_level_0 rdapx fred";q=1
+    accept: application/json;q=0.9, 
+        application/rdap+json;extensions="rdap_level_0 rdapx fred";q=1
     
-When a server is programmed to understand the RDAP-X media type,
-it SHOULD respond with this media type in the "content-type" header. By doing so,
-clients will be able to detect if the server recognizes the media type. Otherwise,
-the server will use the "application/rdap+json" media type signalling to the client
-that the RDAP-X media type is not recognized by the server.
-This updates the usage of the "content-type" header with RDAP defined in [@!RFC7480],
-but this usage is backwards-compatible.
+When a server is programmed to understand the "extensions" parameter,
+it MUST respond with the "extensions" parameter in media type in the "content-type" header. By doing so,
+clients will be able to detect if the server recognizes the "extensions" parameter.
+[@!RFC7480] requires that only the "application/rdap+json" media type be used in the
+"content-type" header.
 
-If both a client and server support the RDAP-X media type, and the client requests
-an extension that is unimplemented by the server, the server SHOULD respond with
-the RDAP-X media type using only extensions implemented by the server. This behavior
+If both a client and server support the "extensions" parameter, and the client requests
+an extension that is unimplemented by the server, the server MUST respond with
+only extensions implemented by the server. This behavior
 is backwards-compatible as RDAP clients must ignore unknown extensions as specified by
-[@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED.
+[@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED
+becuase an RDAP client could interpret this status code to mean that the server does not
+understand RDAP in its entirety.
 
 Likewise, if a server is required to use an extension in a response that was not
-requested by the client, the server SHOULD respond as if the client had requested
+requested by the client, the server MUST respond as if the client had requested
 the extension. This behavior is backwards-compatible as RDAP clients must ignore unknown
 extensions as specified by [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status
-code is NOT RECOMMENDED.
+code is NOT RECOMMENDED for the reason stated above.
 
-When the RDAP-X media type is used in the "content-type" header, the
-values in the media type's "extensions" parameter SHOULD match the values in the "rdapConformance"
-array in the returned JSON. When there is a mismatch between the "extensions" parameter and
-the "rdapConformance" array, clients SHOULD give preference to the "rdapConformance"
-array.
+When the "extensions" parameter is used in the RDAP media type in the "content-type" header, the
+values in the media type's "extensions" parameter MUST match the values in the "rdapConformance"
+array in the returned JSON.
 
 Just as servers should not put extensions into the "rdapConformance" array for which
-they do not support, servers SHOULD NOT list extensions in the RDAP-X media type for
+they do not support, servers MUST NOT list extensions in the "extensions" parameter for
 which they do not support.
 
 The contents of the "extensions" parameter mirrors the content of the
 "rdapConformance" array in server responses. This includes the identifier "rdap_level_0", which is not
-an extension identifier by an identifier for the base RDAP specifications. Servers MUST
+an extension identifier but an identifier for the base RDAP specifications. Servers MUST
 follow the same rules for placing "rdap_level_0" in the content of the "extensions"
-parameter and the "rdapConformance" array. Clients SHOULD interpret an "extensions"
+parameter and the "rdapConformance" array. Clients MUST interpret an "extensions"
 parameter without "rdap_level_0" or one of its successor identifiers (e.g. "rdap_level_1")
 in the same manner as the interpretation of the "rdapConformance" array without
 "rdap_level_0" or one of its successors.
 
 Nothing in this specification sidesteps or obviates the HTTP content negotiation defined
-in [@!RFC9110] for RDAP. Specifically, if a client gives RDAP-X a lower q value than
-any other media type, that is a signal not to use RDAP-X.
+in [@!RFC9110] for RDAP.
 
 Likewise, nothing in this specification sidesteps or obviates the HTTP caching mechanisms
 defined in [@!RFC9110]. Further advice on the "vary" header can be found in (#vary_header).
@@ -139,8 +134,19 @@ passed from the client to the server, and the presence of these protocol element
 used by servers to determine a client's capability to handle the RDAP extension. This specification
 does not require the usage of those extension identifiers in the "extensions" parameter,
 though clients SHOULD list the extension identifier in the "extensions" parameter when using
-other protocol elements of those extensions. Servers SHOULD NOT require the usage of extension
-identifiers in the "extensions" parameter when other extension protocol elements are used.
+other protocol elements of those extensions for better compatibility with servers
+recognizing the "extensions" parameter. Servers SHOULD NOT require the usage of extension
+identifiers in the "extensions" parameter when other extension protocol elements are used for
+backwards-compatibility purposes.
+
+## RDAP-X Extension
+
+This document defines an RDAP "profile" extension using the identifier "rdapx" (hyphen
+characters are not allowed in RDAP extension identifiers). This RDAP extension defines
+no additional RDAP queries or response structures.
+
+The purpose of this RDAP extension is to allow servers to signal support for the "extensions" parameter in
+"rdapConformance" arrays of responses to "/help" (aka "service discovery").
 
 ## Examples
 
@@ -150,8 +156,8 @@ The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RF
 
 This example demonstrates the negotiation of the "applicaton/rdap+json" media type
 as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
-the negotiation in which a client does not support RDAP-X but a server does support
-RDAP-X.
+the negotiation in which a client does not support the "extensions" parameter but a server does support
+the "extensions" parameter.
 
 Client Request:
 
@@ -161,41 +167,41 @@ Client Request:
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json
+    content-type: application/rdap+json;extensions="rdap_level_0 rdapx"
 
     { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
 
-### RDAP-X Negotiation
+### Negotiation of An RDAP Extension
 
-In this example, both the client and server support RDAP-X and a fictional
+In this example, both the client and server support the "extensions" parameter and a fictional
 extension of "foo".
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+    accept: application/rdap+json;extensions="rdap_level_0 rdapx foo"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+    content-type: application/rdap+json;extensions="rdap_level_0 rdapx foo"
 
     { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
-### No Server Support Negotiation
+### No Server Support For Extensions Parameter
 
-In this example, only the client supports RDAP-X, along with a fictional
-extension of "foo".
+In this example, only the client supports the "extensions" parameter, along with a fictional
+extension of "foo" by both.
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+    accept: application/rdap+json;extensions="rdap_level_0 rdapx foo"
 
 Server Response:
 
@@ -208,18 +214,18 @@ Server Response:
 
 ### Differing Extension Negotiation
 
-In this example, both the client and server support RDAP-X. The client
+In this example, both the client and server support the "extensions" parameter. The client
 supports the extensions "foo" and "bar" while the server only support "foo".
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx foo bar"
+    accept: application/rdap+json;extensions="rdap_level_0 rdapx foo bar"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx foo"
+    content-type: application/rdap+json;extensions="rdap_level_0 rdapx foo"
 
     { "rdapConformance" : [ "rdap_level_0", "rdapx", "foo" ],
       "notices" : [
@@ -237,12 +243,12 @@ is in the "versioning" JSON).
 Client Request:
 
     GET /domain/example.com HTTP/1.1
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx versioning_0_2"
+    accept: application/rdap+json;extensions="rdap_level_0 rdapx versioning_0_2"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx versioning"
+    content-type: application/rdap+json;extensions="rdap_level_0 rdapx versioning"
 
     { "rdapConformance" : [ "rdap_level_0", "rdapx", "versioning" ],
       "objectClassName": "domain",
@@ -274,70 +280,11 @@ The type attribute signals to a client the expected media type of the resource
 referenced in the href attribute, and some clients use this information to determine
 if the URI in the href attribute should be de-referenced.
 
-Servers MAY use the RDAP-X media type in the type attribute if a client
-has negotiated content with the server using the RDAP-X media type, 
-the resource referenced by the URI matches the RDAP-X media type, and
-the resource referenced by the URI is served by a server compliant with this specification.
-Otherwise, use of the "application/rdap+json" media type is RECOMMENDED when the URI
-references RDAP resources. 
+Usage of the "extensions" parameter in the media type of the type attribute is NOT RECOMMENDED
+as clients are under obligation to use the "extensions" parameter as described in (#using). That is,
+clients will populate the contents of the "extensions" parameter according to (#using) regardless of
+its usage in the link.
 
-## Example With RDAP-X Negotiation
-
-In this example, both the client and server support RDAP-X and the server has opted
-to return links with the RDAP-X media type in a domain query.
-
-Client Request:
-
-    GET /domain/example.com HTTP/1.1
-    accept: application/rdap+json, application/rdap-x+json;extensions="rdap_level_0 rdapx"
-
-Server Response:
-
-    HTTP/1.1 200 OK
-    content-type: application/rdap-x+json;extensions="rdap_level_0 rdapx"
-
-    { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
-      "objectClassName": "domain",
-      "ldhName" : "example.com",
-      "links": [ {
-        "value": "https://regy.example.net/domain/example.com",
-        "rel": "self",
-        "href": "https://regy.example.net/domain/example.com",
-        "type": "application/rdap-x+json;extensions=\"rdap_level_0 rdapx\"" } ]
-    }
-
-## Example Without RDAP-X Negotiation
-
-In this example, the client does not support RDAP-X. Though the server may support
-RDAP-X, it will not signal RDAP-X because the client does not request it.
-
-Client Request:
-
-    GET /domain/example.com HTTP/1.1
-    accept: application/rdap+json
-
-Server Response:
-
-    HTTP/1.1 200 OK
-    content-type: application/rdap+json
-
-    { "rdapConformance" : [ "rdap_level_0", "rdapx" ],
-      "ldhName" : "example.com",
-      "links": [ {
-        "value": "https://regy.example.net/domain/example.com",
-        "rel": "self",
-        "href": "https://regy.example.net/domain/example.com",
-        "type": "application/rdap+json" } ]
-    }
-
-# RDAP-X Extension
-
-This document defines an RDAP "profile" extension using the identifier "rdapx" (hyphen
-characters are not allowed in RDAP extension identifiers). This RDAP extension defines
-no additional RDAP queries or response structures.
-
-The purpose of this RDAP extension is to allow servers to signal support for RDAP-X in
-"rdapConformance" arrays of responses to "/help" (aka "service discovery").
 
 # Security Considerations
 
@@ -403,11 +350,11 @@ Consider the following scenario where user Bob and user Alice send queries to th
 RDAP server that is routed through a middlebox network element implementing a shared HTTP cache.
 
 User Bob sends a query for the domain "example.com"
-(http://regy.example/domain/example.com) without RDAP-X. The "accept" header sent
-for Bob's query would be "accept: application/rdap+json" or "accept: application/json".
+(http://regy.example/domain/example.com) without the "extensions" parameter. The "accept" header sent
+for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.
 
-User Alice later sends a query for the same domain, however her client uses RDAP-X. The "accept"
-header sent for Alice's query might be "accept: application/rdap-x+json, application/rdap+json".
+User Alice later sends a query for the same domain, however her client uses the "extensions" parameter. The "accept"
+header sent for Alice's query might be `accept: application/rdap+json;extensions="rdap_level_0 foo"`.
 
 If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
@@ -422,23 +369,14 @@ consult [@!RFC9110] regarding caching and other uses of the "vary" header.
 
 # Design Considerations {#design_considerations}
 
-## Not Reusing the Existing Media Type
+## Reusing the Existing Media Type
 
-[@?RFC6838, section 4.3] strongly discourages the creation of new parameters on existing
-media types to enable new features. As RDAP has always had extensions, it could be argued
-that adding an "extensions" parameter to the existing "application/rdap+json" media type
-is not adding a new feature to RDAP. However, the opposite could be argued that adding
-the capability for clients to signal desired RDAP extensions is a new feature.
+Earliest versions of this document specified a new media-type because the authors believed
+the addition of new parameter on the existing RDAP media-type may be backwards incompatible
+with many RDAP servers. However, a study conducted by Pawel Kowalik concluded that 99.65%
+of RDAP servers are compatible with a new parameter on the existing RDAP media-type.
 
-More practically, there is concern that adding a new parameter to the existing media
-type would not be backwards-compatible with some server software. That is, servers
-examining media types as exact string matches may incorrectly conclude that the existing
-media type with an unknown, new parameter may not be the same as the existing media
-type without parameters. A similar, though less likely, concern exists for clients.
-
-As servers are required to handle multiple media types according to [@!RFC7480] and [@?RFC9110],
-it therefore seems reasonable to conclude that defining a new media type for use with
-the existing media type is best to preserve backward compatibility.
+Additionally, [?@RFC2045] requires that server ignore unknown parameters.
 
 ## Inappropriate Use of Query Parameters
 
@@ -481,7 +419,7 @@ due to architecture considerations, see the section below). Specific to RDAP, [@
 instructs RDAP servers to ignore unknown query parameters and instructs clients not to
 transform the URL of a redirect.
 
-Therefore, query parameters denoting RDAP extensions will not survive redirects. This can
+Therefore, query parameters denoting RDAP extensions should not survive redirects in RDAP. This can
 be readily observed in currently deployed RDAP servers:
 
 ```
@@ -523,7 +461,7 @@ but does not automatically preserve the query parameters.
 ```
 
 Preservation of query parameters is not a guaranteed feature of HTTP client and server libraries,
-whereas preservation of media types is.
+whereas preservation of media types is much more likely.
 
 ### Referral Compatibility
 
@@ -539,7 +477,7 @@ a domain registration in a domain registry.
       "type" : "application/rdap+json"
     }
 
-Usage of the RDAP-X media type does not require clients to conduct further processing of these
+Usage of the "extensions" parameter does not require clients to conduct further processing of these
 referrals, whereas a query parameter approach would require clients to process and de-conflict
 any other query parameters if present.
 
