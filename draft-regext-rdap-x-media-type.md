@@ -316,7 +316,7 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
 
 Pawel Kowalik provided extensive review of this document and conducted a study that forms the
 basis of re-using the existing RDAP media type. Mario Loffredo and James Mitchell have provided ideas and feedbacks that have contributed to
-the content of this document. Murray Kucherawy and Alexey Melnikov provided guidance on the use media types and
+the content of this document. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
 media type parameters.
 
 {backmatter}
