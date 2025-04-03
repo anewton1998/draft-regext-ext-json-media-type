@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-03"
 stream = "IETF"
 status = "standard"
-date = 2024-10-17T00:00:00Z
+date = 2024-04-03T00:00:00Z
 
 [[author]]
 initials="A."
@@ -61,7 +61,7 @@ with the deployed RDAP ecosystem (see (#design_considerations) for further infor
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED",
 "MAY", and "OPTIONAL" in this document are to be interpreted as
-described in [@!BCP14] when, and only when, they
+described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they
 appear in all capitals, as shown here.
 
 # The RDAP Media Type With Extensions Parameter
@@ -72,7 +72,7 @@ extensions as defined in the IANA RDAP Extensions registry.
 
 Here is an example:
 
-    application/rdap+json;extensions="rdap_level_0 fred"
+    application/rdap+json;extensions="rdap_level_0 rdapExtensions1 fred"
     
 
 # Using The Extensions Parameter {#using}
@@ -141,9 +141,8 @@ backwards-compatibility purposes.
 
 ## Extension Identifier
 
-This document defines an RDAP "profile" extension using the identifier "rdapExtensions1"
-This RDAP extension defines
-no additional RDAP queries or response structures.
+This document defines an RDAP "profile" extension using the identifier "rdapExtensions1".
+This RDAP extension defines no additional RDAP queries or response structures.
 
 The purpose of this RDAP extension is to allow servers to signal support for the "extensions" parameter in
 "rdapConformance" arrays of responses to "/help" (aka "service discovery").
@@ -154,7 +153,7 @@ The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RF
 
 ### Classic Negotiation
 
-This example demonstrates the negotiation of the "applicaton/rdap+json" media type
+This example demonstrates the negotiation of the "application/rdap+json" media type
 as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
 the negotiation in which a client does not support the "extensions" parameter but a server does support
 the "extensions" parameter.
@@ -236,8 +235,8 @@ Server Response:
 For scenarios where the "versioning" extension, as defined by [@?I-D.ietf-regext-rdap-versioning],
 is used, the extension identifiers in the client request may not be exact or case-insensitive matches for the
 extension identifiers in the server response (unlike scenarios where the "versioning" extension is not used).
-That is, the extension identifiers used by the client have prepended versioning information, but the
-extension identifiers returned by the server do not have prepended versioning information (such information
+That is, the extension identifiers used by the client have appended versioning information, but the
+extension identifiers returned by the server do not have appended versioning information (such information
 is in the "versioning" JSON).
 
 Client Request:
@@ -299,7 +298,7 @@ for one server into the redirect URL of another server.
 
 # IANA Considerations
 
-The IETF requests the IANA to register the following extension in the RDAP Extensions Registry.
+The IETF requests the IANA to register the following extension in the RDAP Extensions Registry at [@RDAP-EXTENSIONS]:
 
     Extension identifier: rdapExtensions1
 
@@ -316,7 +315,7 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
 
 Pawel Kowalik provided extensive review of this document and conducted a study that forms the
 basis of re-using the existing RDAP media type. Mario Loffredo and James Mitchell have provided ideas and feedbacks that have contributed to
-the content of this document. Murray Kucherawy and Alexey Melnikov provided guidance on the use media types and
+the content of this document. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
 media type parameters.
 
 {backmatter}
@@ -334,7 +333,7 @@ User Bob sends a query for the domain "example.com"
 for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.
 
 User Alice later sends a query for the same domain, however her client uses the "extensions" parameter. The "accept"
-header sent for Alice's query might be `accept: application/rdap+json;extensions="rdap_level_0 foo"`.
+header sent for Alice's query might be `accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"`.
 
 If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
@@ -352,11 +351,11 @@ consult [@!RFC9110] regarding caching and other uses of the "vary" header.
 ## Reusing the Existing Media Type
 
 Earliest versions of this document specified a new media type because the authors believed
-the addition of new parameter on the existing RDAP media-type may be backwards incompatible
+the addition of new parameter on the existing RDAP media type may be backwards-incompatible
 with many RDAP servers. However, a study conducted by Pawel Kowalik concluded that 99.65%
-of RDAP servers are compatible with a new parameter on the existing RDAP media-type.
+of RDAP servers are compatible with a new parameter on the existing RDAP media type.
 
-Additionally, [?@RFC2045] requires that server ignore unknown parameters.
+Additionally, [@?RFC2045] requires that the server ignore unknown parameters.
 
 ## Inappropriate Use of Query Parameters
 
@@ -375,7 +374,7 @@ problems.
 ### Copy and Paste
 
 Consider two RDAP users, Alice and Bob. Alice has an RDAP client that supports
-the extensions "fizzbuzz", and Bob has an RDAP client that does not support this
+the extension "fizzbuzz", and Bob has an RDAP client that does not support this
 extension.
 
 Now consider the scenario where Alice copies and pastes the RDAP URL from above into an email
@@ -417,7 +416,7 @@ preserved but that the media type is automatically preserved.
 
 ```
 2024-01-05T11:15:34.380989Z  INFO client: sending reqwest to http://127.0.0.1:3000/ex1/domain/foo.example?foo&bar
-2024-01-05T11:15:34.431386Z  INFO client: returned content type: "application/rdap-x;extensions=\"foo bar\""
+2024-01-05T11:15:34.431386Z  INFO client: returned content type: "application/rdap+json;extensions=\"foo bar\""
 2024-01-05T11:15:34.431413Z  INFO client: status code is 418 I'm a teapot
 2024-01-05T11:15:34.431476Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
 ```
@@ -478,5 +477,14 @@ violations are strictly forbidden. Every design decision is a trade-off. However
 the architecture of an ecosystem generally makes re-use of software and systems easier,
 and often eases the adoption of newer features in the future. When given the choice between
 two designs, the design that does not violate architecture should be preferred when all
-other considerations are equal. 
+other considerations are equal.
+
+<reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
+    <front>
+        <title>RDAP Extensions</title>
+        <author>
+            <organization>IANA</organization>
+        </author>
+    </front>
+</reference>
 
