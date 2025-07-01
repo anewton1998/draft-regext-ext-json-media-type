@@ -63,7 +63,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they
 appear in all capitals, as shown here.
 
-# The RDAP Media Type With Extensions Parameter
+# The RDAP Media Type With Extensions Parameter {#parameter}
 
 The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
 This parameter is a whitespace-separated list of RDAP
@@ -315,6 +315,8 @@ for one server into the redirect URL of another server.
 
 # IANA Considerations
 
+## RDAP Extension Registry
+
 The IETF requests the IANA to register the following extension in the RDAP Extensions Registry at [@RDAP-EXTENSIONS]:
 
     Extension identifier: exts
@@ -327,6 +329,14 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
     The Internet Engineering Steering Group <iesg@ietf.org>
 
     Intended usage: COMMON
+
+## Addition of Parameter to RDAP Media Type
+
+This document defines the optional parameter "exts_list" for the media type for the "application/rdap+json"
+as described in (#parameter).
+
+The IETF requests the IANA to add this document as an additional reference to the IANA media type registry for
+the media type "application/rdap+json".
 
 # Acknowledgements
 
