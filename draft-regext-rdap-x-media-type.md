@@ -11,7 +11,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-03"
 stream = "IETF"
 status = "standard"
-date = 2024-04-03T00:00:00Z
+date = 2025-09-03T00:00:00Z
 
 [[author]]
 initials="A."
@@ -87,7 +87,7 @@ This is an example of the "accept" header using the RDAP media type with an "ext
         application/rdap+json;extensions="rdap_level_0 rdapExtensions1 fred";q=1
     
 When a server is programmed to understand the "extensions" parameter,
-it MUST respond with the "extensions" parameter in media type in the "content-type" header. By doing so,
+it MUST respond with the "extensions" parameter in the RDAP media type in the "content-type" header. By doing so,
 clients will be able to detect if the server recognizes the "extensions" parameter.
 [@!RFC7480] requires that only the "application/rdap+json" media type be used in the
 "content-type" header.
