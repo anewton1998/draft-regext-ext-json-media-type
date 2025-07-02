@@ -3,15 +3,14 @@ Title = "Extensions Parameter for the RDAP Media Type"
 area = "Applications and Real-Time Area (ART)"
 workgroup = "Registration Protocols Extensions (regext)"
 abbrev = "rdap-x"
-updates = [7480]
 ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-03"
+value = "draft-ietf-regext-rdap-x-media-type-04"
 stream = "IETF"
 status = "standard"
-date = 2025-09-03T00:00:00Z
+date = 2025-07-03T00:00:00Z
 
 [[author]]
 initials="A."
@@ -64,38 +63,32 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they
 appear in all capitals, as shown here.
 
-# The RDAP Media Type With Extensions Parameter
+# The RDAP Media Type With Extensions Parameter {#parameter}
 
-The RDAP media type, "application/rdap+json", may have an optional parameter named "extensions". 
+The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
 This parameter is a whitespace-separated list of RDAP
-extensions as defined in the IANA RDAP Extensions registry.
+extension identifiers (as would be found in the "rdapConformance" array).
 
 Here is an example:
 
-    application/rdap+json;extensions="rdap_level_0 rdapExtensions1 fred"
+    application/rdap+json;exts_list="rdap_level_0 exts fred"
     
 
 # Using The Extensions Parameter {#using}
 
 [@!RFC7480] specifies the usage of "application/json", "application/rdap+json" or
-both with HTTP "accept" header. The "extensions" parameter may only be used with
+both with HTTP "accept" header. The "exts_list" parameter may only be used with
 the "application/rdap+json" media type.
 
 This is an example of the "accept" header using the RDAP media type with an "extensions" parameter:
 
     accept: application/json;q=0.9, 
-        application/rdap+json;extensions="rdap_level_0 rdapExtensions1 fred";q=1
+        application/rdap+json;exts_list="rdap_level_0 exts fred";q=1
     
-When a server is programmed to understand the "extensions" parameter,
-it MUST respond with the "extensions" parameter in the RDAP media type in the "content-type" header. By doing so,
-clients will be able to detect if the server recognizes the "extensions" parameter.
-[@!RFC7480] requires that only the "application/rdap+json" media type be used in the
-"content-type" header.
-
-If both a client and a server support the "extensions" parameter, and the client requests
+If both a client and a server support the "exts_list" parameter, and the client requests
 an extension that is unimplemented by the server, the server MUST respond with
-only extensions implemented by the server. This behavior
-is backwards-compatible as RDAP clients must ignore unknown extensions as specified by
+only extensions included in the response by the server. This behavior
+is backwards-compatible as RDAP clients must ignore unknown RDAP extensions as specified by
 [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED
 because an RDAP client could interpret this status code to mean that the server does not
 understand RDAP in its entirety.
@@ -106,19 +99,20 @@ the extension. This behavior is backwards-compatible as RDAP clients must ignore
 extensions as specified by [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status
 code is NOT RECOMMENDED for the reason stated above.
 
-When the "extensions" parameter is used in the RDAP media type in the "content-type" header, the
-values in the media type's "extensions" parameter MUST match the values in the "rdapConformance"
-array in the returned JSON.
+When the "exts_list" parameter is used in the RDAP media type in the "content-type" header, the
+values in the media type's "exts_list" parameter MUST match the values in the "rdapConformance"
+array in the returned JSON. However, implementation experience has shown that some HTTP
+server libraries do not support modification of the "content-type" header per query type.
+Therefore use of the "exts_list" parameter with the media type of the "content-type" header
+is NOT REQUIRED. That is, when used in the "content-type" header, the values of the "exts_list"
+parameter must match that of the "rdapConformance" array but server may opt to omit the
+"exts_list" parameter from the media type in the "content-type" header.
 
-Just as servers must not put extensions into the "rdapConformance" array for which
-they do not support, servers MUST NOT list extensions in the "extensions" parameter for
-which they do not support.
-
-The contents of the "extensions" parameter mirrors the content of the
+The contents of the "exts_list" parameter mirrors the content of the
 "rdapConformance" array in server responses. This includes the identifier "rdap_level_0", which is not
 an extension identifier but an identifier for the base RDAP specifications. Servers MUST
-follow the same rules for placing "rdap_level_0" in the content of the "extensions"
-parameter and the "rdapConformance" array. Clients MUST interpret an "extensions"
+follow the same rules for placing "rdap_level_0" in the content of the "exts_list"
+parameter and the "rdapConformance" array. Clients MUST interpret an "exts_list"
 parameter without "rdap_level_0" or one of its successor identifiers (e.g. "rdap_level_1")
 in the same manner as the interpretation of the "rdapConformance" array without
 "rdap_level_0" or one of its successors.
@@ -132,19 +126,19 @@ defined in [@!RFC9110]. Further advice on the "vary" header can be found in (#va
 Some RDAP extensions, such as [@?RFC9560], have other protocol elements (e.g. extension-specific query parameters)
 passed from the client to the server, and the presence of these protocol elements may be
 used by servers to determine a client's capability to handle the related RDAP extension(s). This specification
-does not require the usage of those extension identifiers in the "extensions" parameter,
-though clients SHOULD list the extension identifier in the "extensions" parameter when using
+does not require the usage of those extension identifiers in the "exts_list" parameter,
+though clients SHOULD list the extension identifier in the "exts_list" parameter when using
 other protocol elements of those extensions for better compatibility with servers
-recognizing the "extensions" parameter. Servers SHOULD NOT require the usage of extension
-identifiers in the "extensions" parameter when other extension protocol elements are used for
+recognizing the "exts_list" parameter. Servers SHOULD NOT require the usage of extension
+identifiers in the "exts_list" parameter when other extension protocol elements are used for
 backwards-compatibility purposes.
 
 ## Extension Identifier
 
-This document defines an RDAP "profile" extension using the identifier "rdapExtensions1".
+This document defines an RDAP extension using the identifier "exts".
 This RDAP extension defines no additional RDAP queries or response structures.
 
-The purpose of this RDAP extension is to allow servers to signal support for the "extensions" parameter in
+The purpose of this RDAP extension is to allow servers to signal support for the "exts_list" parameter in
 "rdapConformance" arrays of responses to "/help" (aka "service discovery").
 
 ## Examples
@@ -155,8 +149,8 @@ The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RF
 
 This example demonstrates the negotiation of the "application/rdap+json" media type
 as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
-the negotiation in which a client does not support the "extensions" parameter but a server does support
-the "extensions" parameter.
+the negotiation in which a client does not support the "exts_list" parameter but a server does support
+the "exts_list" parameter.
 
 Client Request:
 
@@ -166,41 +160,61 @@ Client Request:
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;extensions="rdap_level_0 rdapExtensions1"
+    content-type: application/rdap+json;exts_list="rdap_level_0 exts"
 
-    { "rdapConformance" : [ "rdap_level_0", "rdapExtensions1" ],
+    { "rdapConformance" : [ "rdap_level_0", "exts" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
 
 ### Negotiation of an RDAP Extension
 
-In this example, both the client and server support the "extensions" parameter and a fictional
+In this example, both the client and server support the "exts_list" parameter and a fictional
 extension of "foo".
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"
+    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"
+    content-type: application/rdap+json;exts_list="rdap_level_0 exts foo"
 
-    { "rdapConformance" : [ "rdap_level_0", "rdapExtensions1", "foo" ],
+    { "rdapConformance" : [ "rdap_level_0", "exts", "foo" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
-### No Server Support for Extensions Parameter
+### Negotiation of an RDAP Extension Without "Content-Type"
 
-In this example, only the client supports the "extensions" parameter, along with a fictional
+In this example, both the client and server support the "exts_list" parameter and a fictional
+extension of "foo". However, the server does not support the "exts_list" parameter in the
+"content-type" header.
+
+Client Request:
+
+    GET /help HTTP/1.1
+    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap+json
+
+    { "rdapConformance" : [ "rdap_level_0", "exts", "foo" ],
+      "notices" : [
+        { "description" : [ "my content includes a trailing CRLF" ] } ] }
+
+### No Server Support for exts_list Parameter
+
+In this example, only the client supports the "exts_list" parameter, along with a fictional
 extension of "foo" by both.
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"
+    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
 
 Server Response:
 
@@ -213,20 +227,20 @@ Server Response:
 
 ### Differing Extension Negotiation
 
-In this example, both the client and server support the "extensions" parameter. The client
+In this example, both the client and server support the "exts_list" parameter. The client
 supports the extensions "foo" and "bar" while the server only support "foo".
 
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo bar"
+    accept: application/rdap+json;exts_list="rdap_level_0 exts foo bar"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"
+    content-type: application/rdap+json;exts_list="rdap_level_0 exts foo"
 
-    { "rdapConformance" : [ "rdap_level_0", "rdapExtensions1", "foo" ],
+    { "rdapConformance" : [ "rdap_level_0", "exts", "foo" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
@@ -242,14 +256,14 @@ is in the "versioning" JSON).
 Client Request:
 
     GET /domain/example.com HTTP/1.1
-    accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 versioning_0_2"
+    accept: application/rdap+json;exts_list="rdap_level_0 exts versioning_0_2"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 versioning"
+    content-type: application/rdap+json;exts_list="rdap_level_0 exts versioning"
 
-    { "rdapConformance" : [ "rdap_level_0", "rdapExtensions1", "versioning" ],
+    { "rdapConformance" : [ "rdap_level_0", "exts", "versioning" ],
       "objectClassName": "domain",
       "ldhName": "example.com",
       "versioning": [ {
@@ -279,11 +293,14 @@ The type attribute signals to a client the expected media type of the resource
 referenced in the href attribute, and some clients use this information to determine
 if the URI in the href attribute should be de-referenced.
 
-Usage of the "extensions" parameter in the media type of the "type" attribute is NOT RECOMMENDED
-as clients are under obligation to use the "extensions" parameter as described in (#using). That is,
-clients will populate the contents of the "extensions" parameter according to (#using) regardless of
-its usage in the link.
+Usage of the "exts_list" parameter in the media type of the "type" attribute is allowed
+but the "type" attribute as a whole is only a hint, as noted by [@!RFC8288]:
 
+> The "type" attribute, when present, is a hint indicating what the
+> media type of the result of dereferencing the link should be.  Note
+> that this is only a hint; for example, it does not override the
+> Content-Type header field of a HTTP response obtained by actually
+> following the link.
 
 # Security Considerations
 
@@ -298,9 +315,11 @@ for one server into the redirect URL of another server.
 
 # IANA Considerations
 
+## RDAP Extension Registry
+
 The IETF requests the IANA to register the following extension in the RDAP Extensions Registry at [@RDAP-EXTENSIONS]:
 
-    Extension identifier: rdapExtensions1
+    Extension identifier: exts
 
     Registry operator: ALL
 
@@ -311,12 +330,20 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
 
     Intended usage: COMMON
 
+## Addition of Parameter to RDAP Media Type
+
+This document defines the optional parameter "exts_list" for the media type "application/rdap+json"
+as described in (#parameter).
+
+The IETF requests the IANA to add this document as an additional reference to the IANA Media Type registry at [@MEDIA-TYPES] for
+the media type "application/rdap+json".
+
 # Acknowledgements
 
 Pawel Kowalik provided extensive review of this document and conducted a study that forms the
 basis of re-using the existing RDAP media type. Mario Loffredo and James Mitchell have provided ideas and feedbacks that have contributed to
-the content of this document. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
-media type parameters.
+the content of this document based on their implementation experience. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
+media type parameters. Jame Gould provided feedback that contributed to the content of this document.
 
 {backmatter}
 
@@ -329,11 +356,11 @@ Consider the following scenario where user Bob and user Alice send queries to th
 RDAP server that is routed through a middlebox network element implementing a shared HTTP cache.
 
 User Bob sends a query for the domain "example.com"
-(http://regy.example/domain/example.com) without the "extensions" parameter. The "accept" header sent
+(http://regy.example/domain/example.com) without the "exts_list" parameter. The "accept" header sent
 for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.
 
-User Alice later sends a query for the same domain, however her client uses the "extensions" parameter. The "accept"
-header sent for Alice's query might be `accept: application/rdap+json;extensions="rdap_level_0 rdapExtensions1 foo"`.
+User Alice later sends a query for the same domain, however her client uses the "exts_list" parameter. The "accept"
+header sent for Alice's query might be `accept: application/rdap+json;exts_list="rdap_level_0 exts foo"`.
 
 If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
@@ -411,36 +438,8 @@ This code consists of a simple client and a simple server. The client sets both 
 media type and query parameters. The servers listen on two ports, redirecting the client
 from a URL on the first port to a URL on the second port.
 
-Here is the output of the client. It shows that the query parameters are not automatically
-preserved but that the media type is automatically preserved.
-
-```
-2024-01-05T11:15:34.380989Z  INFO client: sending reqwest to http://127.0.0.1:3000/ex1/domain/foo.example?foo&bar
-2024-01-05T11:15:34.431386Z  INFO client: returned content type: "application/rdap+json;extensions=\"foo bar\""
-2024-01-05T11:15:34.431413Z  INFO client: status code is 418 I'm a teapot
-2024-01-05T11:15:34.431476Z  INFO client: response is {"errorCode":418,"title": "Your Beverage Choice is Not Available"}
-```
-
-Here is the output of the server. It shows that the client, upon redirect, automatically sends the media type
-but does not automatically preserve the query parameters.
-
-```
-2024-01-05T11:15:31.071936Z  INFO servers: starting server on port 3000
-2024-01-05T11:15:31.071961Z  INFO servers: starting server on port 4000
-2024-01-05T11:15:34.429595Z  INFO servers: [redirecting server] Serving request from 127.0.0.1:60260
-2024-01-05T11:15:34.429648Z  INFO servers: [redirecting server] received query parameters: 'bar', 'foo'
-2024-01-05T11:15:34.429682Z  INFO servers: [redirecting server] client signaled RDAP extension 'foo'
-2024-01-05T11:15:34.429693Z  INFO servers: [redirecting server] client signaled RDAP extension 'bar'
-2024-01-05T11:15:34.429704Z  INFO servers: [redirecting server] redirecting to http://127.0.0.1:4000/ex2/domain/foo.example
-2024-01-05T11:15:34.430940Z  INFO servers: [authoritative server] Serving request from 127.0.0.1:40840
-2024-01-05T11:15:34.430967Z  INFO servers: [authoritative server] received query parameters:
-2024-01-05T11:15:34.430983Z  INFO servers: [authoritative server] client signaled RDAP extension 'foo'
-2024-01-05T11:15:34.430989Z  INFO servers: [authoritative server] client signaled RDAP extension 'bar'
-2024-01-05T11:15:34.430995Z  INFO servers: [authoritative server] responding with an unuseful error
-```
-
 Preservation of query parameters is not a guaranteed feature of HTTP client and server libraries,
-whereas preservation of media types is much more likely.
+whereas preservation of media types is much more likely to occur.
 
 ### Referral Compatibility
 
@@ -456,13 +455,20 @@ a domain registration in a domain registry.
       "type" : "application/rdap+json"
     }
 
-Usage of the "extensions" parameter does not require clients to conduct further processing of these
+Usage of the "exts_list" parameter does not require clients to conduct further processing of these
 referrals, whereas a query parameter approach would require clients to process and de-conflict
 any other query parameters if present.
 
 ### Architectural Violations
 
-As noted in [@?RFC3986], URI query parameters are meant to be part of the identity of the resource
+[@?RFC3986, section 3.4] states the following:
+
+> The query component contains non-hierarchical data that, along with
+> data in the path component (Section 3.3), serves to identify a
+> resource within the scope of the URI's scheme and naming authority
+> (if any). 
+
+Therefore, URI query parameters are meant to be part of the identity of the resource
 being identified by a URI and pointed to by the location of a URL. RDAP extensions change
 the portions of JSON returned by the server but are not intended to change the resource
 being identified. That is, a domain registration is the same domain registration regardless
@@ -482,6 +488,15 @@ other considerations are equal.
 <reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
     <front>
         <title>RDAP Extensions</title>
+        <author>
+            <organization>IANA</organization>
+        </author>
+    </front>
+</reference>
+
+<reference anchor='MEDIA-TYPES' target='https://www.iana.org/assignments/media-types/'>
+    <front>
+        <title>Media Types</title>
         <author>
             <organization>IANA</organization>
         </author>
