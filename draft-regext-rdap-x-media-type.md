@@ -332,10 +332,10 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
 
 ## Addition of Parameter to RDAP Media Type
 
-This document defines the optional parameter "exts_list" for the media type for the "application/rdap+json"
+This document defines the optional parameter "exts_list" for the media type "application/rdap+json"
 as described in (#parameter).
 
-The IETF requests the IANA to add this document as an additional reference to the IANA media type registry for
+The IETF requests the IANA to add this document as an additional reference to the IANA Media Type registry at [@MEDIA-TYPES] for
 the media type "application/rdap+json".
 
 # Acknowledgements
@@ -343,7 +343,7 @@ the media type "application/rdap+json".
 Pawel Kowalik provided extensive review of this document and conducted a study that forms the
 basis of re-using the existing RDAP media type. Mario Loffredo and James Mitchell have provided ideas and feedbacks that have contributed to
 the content of this document based on their implementation experience. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
-media type parameters. Jame Gould provided feedback that have contributed to the content of this document.
+media type parameters. Jame Gould provided feedback that contributed to the content of this document.
 
 {backmatter}
 
@@ -488,6 +488,15 @@ other considerations are equal.
 <reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
     <front>
         <title>RDAP Extensions</title>
+        <author>
+            <organization>IANA</organization>
+        </author>
+    </front>
+</reference>
+
+<reference anchor='MEDIA-TYPES' target='https://www.iana.org/assignments/media-types/'>
+    <front>
+        <title>Media Types</title>
         <author>
             <organization>IANA</organization>
         </author>
