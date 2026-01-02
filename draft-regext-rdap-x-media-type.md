@@ -10,7 +10,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-05"
 stream = "IETF"
 status = "standard"
-date = 2025-12-31T00:00:00Z
+date = 2026-01-02T00:00:00Z
 
 [[author]]
 initials="A."
@@ -150,7 +150,7 @@ The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RF
 
 This example demonstrates the negotiation of the "application/rdap+json" media type
 as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
-the negotiation in which a client does not support the exts extension, but a server does support
+the negotiation in which a client does not support the "exts" extension, but a server does support
 the "exts" extension.
 
 Client Request:
