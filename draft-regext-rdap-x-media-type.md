@@ -1,5 +1,5 @@
 %%%
-Title = "Extensions Parameter for the RDAP Media Type"
+Title = "The \"exts_list\" Parameter for the RDAP Media Type"
 area = "Applications and Real-Time Area (ART)"
 workgroup = "Registration Protocols Extensions (regext)"
 abbrev = "rdap-x"
@@ -7,10 +7,10 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-04"
+value = "draft-ietf-regext-rdap-x-media-type-05"
 stream = "IETF"
 status = "standard"
-date = 2025-07-02T00:00:00Z
+date = 2026-01-02T00:00:00Z
 
 [[author]]
 initials="A."
@@ -63,7 +63,7 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they
 appear in all capitals, as shown here.
 
-# The RDAP Media Type With Extensions Parameter {#parameter}
+# The RDAP Media Type With "exts_list" Parameter {#parameter}
 
 The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
 This parameter is a whitespace-separated list of RDAP
@@ -74,28 +74,28 @@ Here is an example:
     application/rdap+json;exts_list="rdap_level_0 exts fred"
     
 
-# Using The Extensions Parameter {#using}
+# Using The "exts_list" Parameter {#using}
 
 [@!RFC7480] specifies the usage of "application/json", "application/rdap+json" or
 both with HTTP "accept" header. The "exts_list" parameter may only be used with
 the "application/rdap+json" media type.
 
-This is an example of the "accept" header using the RDAP media type with an "extensions" parameter:
+This is an example of the "accept" header using the RDAP media type with the "exts_list" parameter:
 
     accept: application/json;q=0.9, 
         application/rdap+json;exts_list="rdap_level_0 exts fred";q=1
     
 If both a client and a server support the "exts_list" parameter, and the client requests
 an extension that is unimplemented by the server, the server MUST respond with
-only extensions included in the response by the server. This behavior
-is backwards-compatible as RDAP clients must ignore unknown RDAP extensions as specified by
-[@!RFC9083]. Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED
+only extensions included in the response by the server. This behavior is backwards-compatible as
+RDAP clients should ignore unknown RDAP extensions as specified by [@!RFC9083].
+Responding with an HTTP 406 Not Acceptable status code is NOT RECOMMENDED
 because an RDAP client could interpret this status code to mean that the server does not
 understand RDAP in its entirety.
 
-Likewise, if a server is required to use an extension in a response that was not
-requested by the client, the server MUST respond as if the client had requested
-the extension. This behavior is backwards-compatible as RDAP clients must ignore unknown
+The extensions requested by the client represent a hint for the server in determining the extensions to include the response.
+If a server is required to use an extension in a response that was not requested by the client, the server MUST respond as if the client had requested the extension.
+This behavior is backwards-compatible as RDAP clients should ignore unknown
 extensions as specified by [@!RFC9083]. Responding with an HTTP 406 Not Acceptable status
 code is NOT RECOMMENDED for the reason stated above.
 
@@ -103,17 +103,18 @@ When the "exts_list" parameter is used in the RDAP media type in the "content-ty
 values in the media type's "exts_list" parameter MUST match the values in the "rdapConformance"
 array in the returned JSON. However, implementation experience has shown that some HTTP
 server libraries do not support modification of the "content-type" header per query type.
-Therefore use of the "exts_list" parameter with the media type of the "content-type" header
+Therefore, use of the "exts_list" parameter with the media type of the "content-type" header
 is NOT REQUIRED. That is, when used in the "content-type" header, the values of the "exts_list"
 parameter must match that of the "rdapConformance" array but server may opt to omit the
 "exts_list" parameter from the media type in the "content-type" header.
 
-The contents of the "exts_list" parameter mirrors the content of the
+If a server does use the "exts_list" parameter with the media type in the "content-type" header,
+the content of the "exts_list" parameter MUST mirror the content of the
 "rdapConformance" array in server responses. This includes the identifier "rdap_level_0", which is not
 an extension identifier but an identifier for the base RDAP specifications. Servers MUST
 follow the same rules for placing "rdap_level_0" in the content of the "exts_list"
-parameter and the "rdapConformance" array. Clients MUST interpret an "exts_list"
-parameter without "rdap_level_0" or one of its successor identifiers (e.g. "rdap_level_1")
+parameter and the "rdapConformance" array. Clients MUST interpret the "exts_list"
+parameter without "rdap_level_0" or one of its successor identifiers (e.g., "rdap_level_1")
 in the same manner as the interpretation of the "rdapConformance" array without
 "rdap_level_0" or one of its successors.
 
@@ -123,15 +124,15 @@ in [@!RFC9110] for RDAP.
 Likewise, nothing in this specification sidesteps or obviates the HTTP caching mechanisms
 defined in [@!RFC9110]. Further advice on the "vary" header can be found in (#vary_header).
 
-Some RDAP extensions, such as [@?RFC9560], have other protocol elements (e.g. extension-specific query parameters)
+Some RDAP extensions, such as [@?RFC9560], have other protocol elements (e.g., extension-specific query parameters)
 passed from the client to the server, and the presence of these protocol elements may be
 used by servers to determine a client's capability to handle the related RDAP extension(s). This specification
 does not require the usage of those extension identifiers in the "exts_list" parameter,
 though clients SHOULD list the extension identifier in the "exts_list" parameter when using
 other protocol elements of those extensions for better compatibility with servers
 recognizing the "exts_list" parameter. Servers SHOULD NOT require the usage of extension
-identifiers in the "exts_list" parameter when other extension protocol elements are used for
-backwards-compatibility purposes.
+identifiers in the "exts_list" parameter when these types of extension protocol elements
+are present in requests for better compatibility with the extensions using them.
 
 ## Extension Identifier
 
@@ -149,8 +150,8 @@ The following examples use the HTTP/1.1 message exchange syntax as seen in [@!RF
 
 This example demonstrates the negotiation of the "application/rdap+json" media type
 as defined in [@!RFC7480] using an RDAP "/help" query. This example also demonstrates
-the negotiation in which a client does not support the "exts_list" parameter but a server does support
-the "exts_list" parameter.
+the negotiation in which a client does not support the "exts" extension, but a server does support
+the "exts" extension.
 
 Client Request:
 
@@ -160,7 +161,7 @@ Client Request:
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;exts_list="rdap_level_0 exts"
+    content-type: application/rdap+json
 
     { "rdapConformance" : [ "rdap_level_0", "exts" ],
       "notices" : [
@@ -169,28 +170,8 @@ Server Response:
 
 ### Negotiation of an RDAP Extension
 
-In this example, both the client and server support the "exts_list" parameter and a fictional
+In this example, both the client and server support the "exts" extension and a fictional
 extension of "foo".
-
-Client Request:
-
-    GET /help HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
-
-Server Response:
-
-    HTTP/1.1 200 OK
-    content-type: application/rdap+json;exts_list="rdap_level_0 exts foo"
-
-    { "rdapConformance" : [ "rdap_level_0", "exts", "foo" ],
-      "notices" : [
-        { "description" : [ "my content includes a trailing CRLF" ] } ] }
-
-### Negotiation of an RDAP Extension Without "Content-Type"
-
-In this example, both the client and server support the "exts_list" parameter and a fictional
-extension of "foo". However, the server does not support the "exts_list" parameter in the
-"content-type" header.
 
 Client Request:
 
@@ -206,9 +187,10 @@ Server Response:
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
-### No Server Support for exts_list Parameter
 
-In this example, only the client supports the "exts_list" parameter, along with a fictional
+### No Server Support for "exts" Extension
+
+In this example, only the client supports the "exts" extension, along with a fictional
 extension of "foo" by both.
 
 Client Request:
@@ -227,7 +209,7 @@ Server Response:
 
 ### Differing Extension Negotiation
 
-In this example, both the client and server support the "exts_list" parameter. The client
+In this example, both the client and server support the "exts" extension. The client
 supports the extensions "foo" and "bar" while the server only support "foo".
 
 Client Request:
@@ -238,42 +220,68 @@ Client Request:
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;exts_list="rdap_level_0 exts foo"
+    content-type: application/rdap+json
 
     { "rdapConformance" : [ "rdap_level_0", "exts", "foo" ],
       "notices" : [
         { "description" : [ "my content includes a trailing CRLF" ] } ] }
 
-### Extension Versioning and Meta-data {#versioning}
+### Transitioning from jCard to JSContact
 
-For scenarios where the "versioning" extension, as defined by [@?I-D.ietf-regext-rdap-versioning],
-is used, the extension identifiers in the client request may not be exact or case-insensitive matches for the
-extension identifiers in the server response (unlike scenarios where the "versioning" extension is not used).
-That is, the extension identifiers used by the client have appended versioning information, but the
-extension identifiers returned by the server do not have appended versioning information (such information
-is in the "versioning" JSON).
+This set of examples shows how a transition from RDAP's "legacy" contact format, jCard,
+to JSContact.
+
+The first example of the transition shows a client that supports JSContact and a server that only supports jCard.
 
 Client Request:
 
-    GET /domain/example.com HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 exts versioning_0_2"
+    GET /entity/fizz1234 HTTP/1.1
+    accept: application/rdap+json;exts_list="rdap_level_0 jscontact"
 
 Server Response:
 
     HTTP/1.1 200 OK
-    content-type: application/rdap+json;exts_list="rdap_level_0 exts versioning"
+    content-type: application/rdap+json
 
-    { "rdapConformance" : [ "rdap_level_0", "exts", "versioning" ],
-      "objectClassName": "domain",
-      "ldhName": "example.com",
-      "versioning": [ {
-        "extension": "versioning",
-        "type": "semantic",
-        "version": "versioning_0_2" } ]
+    {
+      "rdapConformance": [ "rdap_level_0" ],
+      "objectClassName": "entity",
+      "handle": "fizz1234",
+      "vcardArray": [
+        "vcard",
+        [
+          [ "version", { }, "text", "4.0" ],
+          [ "fn", { }, "text", "Bob Smurd" ],
+          [ "email", { }, "text", "bob@example.com" ] 
+        ]
+      ]
     }
 
-Servers might also use the "versioning" extension to describe meta-data about
-supported extensions even if the servers do not explicitly support extension versioning.
+In the next example of the transition, the server supports both jCard and JSContact and returns
+JSContact because the client has signaled that it supports the JSContact extension:
+
+Client Request:
+
+    GET /entity/fizz1234 HTTP/1.1
+    accept: application/rdap+json;exts_list="rdap_level_0 jscontact"
+
+Server Response:
+
+    HTTP/1.1 200 OK
+    content-type: application/rdap+json
+
+    {
+      "rdapConformance": [ "rdap_level_0", "jscontact" ],
+      "objectClassName": "entity",
+      "handle": "fizz1234",
+      "jscontact_card": {
+        "@type": "Card",
+        "version": "2.0",
+        "name": { "full": "Bob Smurd" },
+        "emails": { "email": { "address": "bob@example.com" } }
+      }
+    }
+
 
 # Usage in RDAP Links {#links}
 
@@ -289,9 +297,9 @@ supported extensions even if the servers do not explicitly support extension ver
       "type": "application/json"
     }
 
-The type attribute signals to a client the expected media type of the resource
-referenced in the href attribute, and some clients use this information to determine
-if the URI in the href attribute should be de-referenced.
+The link's "type" attribute signals to a client the expected media type of the resource
+referenced in the link's "href" attribute, and some clients use this information to determine
+if the URI in the "href" attribute should be de-referenced.
 
 Usage of the "exts_list" parameter in the media type of the "type" attribute is allowed
 but the "type" attribute as a whole is only a hint, as noted by [@!RFC8288]:
@@ -301,6 +309,68 @@ but the "type" attribute as a whole is only a hint, as noted by [@!RFC8288]:
 > that this is only a hint; for example, it does not override the
 > Content-Type header field of a HTTP response obtained by actually
 > following the link.
+
+Using the "exts_list" parameter in the media type of the "type" attribute in RDAP links
+is NOT RECOMMENDED as it may describe client capabilities which the client may not
+possess.
+
+# Implementation Status
+
+RFC EDITOR NOTE: Please remove this section and the reference to RFC 7942 prior to publication as an RFC.
+
+This section records the status of known implementations of the protocol defined by this specification at the
+time of posting of this Internet-Draft, and is based on a proposal described in RFC 7942 [@?RFC7942].
+The description of implementations in this section is intended to assist the IETF in its decision processes in
+progressing drafts to RFCs. Please note that the listing of any individual implementation here does not imply
+endorsement by the IETF. Furthermore, no effort has been spent to verify the information presented here that
+was supplied by IETF contributors. This is not intended as, and must not be construed to be, a catalog of
+available implementations or their features. Readers are advised to note that other implementations may exist.
+
+According to RFC 7942, "this will allow reviewers and working groups to assign due consideration to documents
+that have the benefit of running code, which may serve as evidence of valuable experimentation and feedback
+that have made the implemented protocols more mature. It is up to the individual working groups to use this information as they see fit".
+
+## IIT-CNR/Registro.it RDAP Server
+
+* Responsible Organization: Institute of Informatics and Telematics of National Research Council (IIT-CNR)/Registro.it
+
+* Location: https://rdap.pubtest.nic.it/
+
+* Description: This implementation includes support for RDAP queries using data from the public test environment of .it ccTLD.
+
+* Level of Maturity: This is an "alpha" test implementation.
+
+* Coverage: This implementation includes all the features described in this specification.
+
+* Contact Information: Mario Loffredo, mario.loffredo@iit.cnr.it
+
+## ICANN-RDAP Client
+
+* Responsible Organization: Internet Corporation for Assigned Names and Numbers
+
+* Location: https://github.com/icann/icann-rdap
+
+* Description: This is a general purpose RDAP client, including client libraries, used directly as CLI and embedded into other software such as intrusion detection systems.
+
+* Level of Maturity: This software is widely used, however the features of this specification are in a pre-release branch of the software.
+
+* Coverage: This implementation includes all the features described in this specification.
+
+* Contact Information: ICANN Global Support, globalsupport@icann.org
+
+## ICANN-RDAP Server
+
+* Responsible Organization: Internet Corporation for Assigned Names and Numbers
+
+* Location: https://github.com/icann/icann-rdap
+
+* Description: This is a general purpose RDAP server, including libraries, used for testing and embedded into production servers of some registry service providers.
+
+* Level of Maturity: The features of this specification are in a pre-release branch of the software.
+
+* Coverage: This implementation includes all the features described in this specification.
+
+* Contact Information: ICANN Global Support, globalsupport@icann.org
 
 # Security Considerations
 
@@ -330,7 +400,7 @@ The IETF requests the IANA to register the following extension in the RDAP Exten
 
     Intended usage: COMMON
 
-## Addition of Parameter to RDAP Media Type
+## Addition of "exts_list" Parameter to the RDAP Media Type
 
 This document defines the optional parameter "exts_list" for the media type "application/rdap+json"
 as described in (#parameter).
@@ -341,16 +411,18 @@ the media type "application/rdap+json".
 # Acknowledgements
 
 Pawel Kowalik provided extensive review of this document and conducted a study that forms the
-basis of re-using the existing RDAP media type. Mario Loffredo and James Mitchell have provided ideas and feedbacks that have contributed to
-the content of this document based on their implementation experience. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
-media type parameters. Jame Gould provided feedback that contributed to the content of this document.
+basis of re-using the existing RDAP media type. James Mitchell has provided ideas and feedbacks that have contributed to
+the content of this document based on his RDAP server implementation experience. Murray Kucherawy and Alexey Melnikov provided guidance on the use of media types and
+media type parameters. Maarten Wullink and Jame Gould provided feedback that contributed to the content of this document. Mario Loffredo has provided valuable
+feedback on the contents of this specification, including feedback from his implementation, that has helped to reduce interoperability
+issues. 
 
 {backmatter}
 
 # Using the Vary Header {#vary_header}
 
 Server implementers may want to consider using the "vary" header depending on the caching
-behavior desired of shared caches (i.e. middleboxes, not client caches).
+behavior desired of shared caches (i.e., middleboxes, not client caches).
 
 Consider the following scenario where user Bob and user Alice send queries to the same
 RDAP server that is routed through a middlebox network element implementing a shared HTTP cache.
@@ -390,7 +462,7 @@ Another design approach to communicating RDAP extensions from the client to the
 server would be the use of URI query parameters:
 
 ```
-https://rdap.example/domain/foo.example?extensions=fizzbuzz  
+https://rdap.example/domain/foo.example?exts_list=fizzbuzz  
 ```
 
 However, there are a few problems with using query parameters for this scenario.
@@ -409,9 +481,9 @@ and sends it to Bob. When Bob uses that URL with his RDAP client, it will be com
 to the server that the extension "fizzbuzz" is understood by Bob's client when it is not.
 
 In this scenario, Bob's client will be unable to render the RDAP extension regardless
-of the usage or not of the query parameter. However, if the server is using the query
+of the usage of the query parameter. However, if the server is using the query
 parameter for secondary purposes, such as gathering metrics and statistics, then the
-capabilities of Bob's client will have been incorrectly signalled to the server.
+capabilities of Bob's client would have been incorrectly signalled to the server.
 
 ### Redirects
 
@@ -421,15 +493,16 @@ registries. Redirects are also heavily used by the RIRs when IP addresses or aut
 system numbers are transferred from one RIR to another.
 
 Within HTTP, URI query parameters are not explicitly preserved during a redirect (probably
-due to architecture considerations, see the section below). Specific to RDAP, [@!RFC7480]
+due to architecture considerations: see the section below). Specific to RDAP, [@!RFC7480]
 instructs RDAP servers to ignore unknown query parameters and instructs clients not to
 transform the URL of a redirect.
 
-Therefore, query parameters denoting RDAP extensions should not survive redirects in RDAP. This can
+Therefore, query parameters denoting RDAP extensions should not survive redirects in RDAP, and in many real-world examples
+they do not survive redirects. This can
 be readily observed in currently deployed RDAP servers:
 
 ```
-curl -v https://rdap-bootstrap.arin.net/bootstrap/autnum/2830?extension=fizzbuzz    
+curl -v https://rdap-bootstrap.arin.net/bootstrap/autnum/2830?exts_list=fizzbuzz    
 ```
 
 To further demonstrate that query parameters do not automatically survive redirects but that media types
@@ -455,9 +528,27 @@ a domain registration in a domain registry.
       "type" : "application/rdap+json"
     }
 
-Usage of the "exts_list" parameter does not require clients to conduct further processing of these
+Usage of the "exts_list" media-type parameter does not require clients to conduct further processing of these
 referrals, whereas a query parameter approach would require clients to process and de-conflict
 any other query parameters if present.
+
+Just as in the copy-and-paste scenario above, a referral with a query parameter representing the RDAP extensions understood
+by the client (i.e., the client's capability to understand RDAP responses), may indicate to a server some capabilities the client
+may not possess.
+
+Consider a scenario in which a user has a client that does no support the JSContact extension (i.e., it only supports jCard) and encounters the
+following referral using a query parameter:
+
+    {
+      "value" : "https://regy.example/domain/foo.example",
+      "rel" : "related",
+      "href" : "https://regr.example/domain/foo.example?exts_list=jscontact,
+      "type" : "application/rdap+json"
+    }
+
+Now consider that the server at regr.example is in a transition phase between jCard and JSContact and serves only JSContact when it is told the client
+understands JSContact. In this scenario, the user would not be capable of processing the contact information because their client
+only understands jCard and the server has responded only with JSContact.
 
 ### Architectural Violations
 
@@ -472,18 +563,11 @@ Therefore, URI query parameters are meant to be part of the identity of the reso
 being identified by a URI and pointed to by the location of a URL. RDAP extensions change
 the portions of JSON returned by the server but are not intended to change the resource
 being identified. That is, a domain registration is the same domain registration regardless
-of whether the postal address in that domain registration is communicated via JCard or
+of whether the postal address in that domain registration is communicated via jCard or
 a new RDAP extension for JSContact.
 
 Changing how the content of a resource is conveyed is called content negotiation and
 is discussed in detail in [@?RFC9110] using media types.
-
-Readers should note that protocol design is not a "priestly affair" in which architectural
-violations are strictly forbidden. Every design decision is a trade-off. However, following
-the architecture of an ecosystem generally makes re-use of software and systems easier,
-and often eases the adoption of newer features in the future. When given the choice between
-two designs, the design that does not violate architecture should be preferred when all
-other considerations are equal.
 
 <reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
     <front>
