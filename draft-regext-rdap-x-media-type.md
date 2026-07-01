@@ -7,7 +7,7 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-05"
+value = "draft-ietf-regext-rdap-x-media-type-06"
 stream = "IETF"
 status = "standard"
 date = 2026-01-02T00:00:00Z
@@ -67,7 +67,8 @@ appear in all capitals, as shown here.
 
 The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
 This parameter is a whitespace-separated list of RDAP
-extension identifiers (as would be found in the "rdapConformance" array).
+extension identifiers and the rdap version identifier (i.e., "rdap_level_0" defined in
+[@!RFC9083]), as would be found in the "rdapConformance" array.
 
 Here is an example:
 
