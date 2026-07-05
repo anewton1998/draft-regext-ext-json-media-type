@@ -10,7 +10,7 @@ name = "Internet-Draft"
 value = "draft-ietf-regext-rdap-x-media-type-06"
 stream = "IETF"
 status = "standard"
-date = 2026-01-02T00:00:00Z
+date = 2026-07-05T00:00:00Z
 
 [[author]]
 initials="A."
@@ -67,7 +67,7 @@ appear in all capitals, as shown here.
 
 The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
 This parameter is a whitespace-separated list of RDAP
-extension identifiers and the rdap version identifier (i.e., "rdap_level_0" defined in
+extension identifiers and the RDAP version identifier (i.e., "rdap_level_0" defined in
 [@!RFC9083]), as would be found in the "rdapConformance" array.
 
 Here is an example:
@@ -570,6 +570,11 @@ a new RDAP extension for JSContact.
 Changing how the content of a resource is conveyed is called content negotiation and
 is discussed in detail in [@?RFC9110] using media types.
 
+### Other Concepts
+
+[@?VERSIONING-SMACKDOWN] discusses the use of URIs for conveying identifiers that are
+better suited for link relationships and media types.
+
 <reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
     <front>
         <title>RDAP Extensions</title>
@@ -584,6 +589,15 @@ is discussed in detail in [@?RFC9110] using media types.
         <title>Media Types</title>
         <author>
             <organization>IANA</organization>
+        </author>
+    </front>
+</reference>
+
+<reference anchor='VERSIONING-SMACKDOWN' target='https://mnot.net/blog/2011/web_api_versioning_smackdown'>
+    <front>
+        <title>Web API Versioning Smackdown</title>
+        <author>
+            <fullname>Mark Nottingham</fullname>
         </author>
     </front>
 </reference>
