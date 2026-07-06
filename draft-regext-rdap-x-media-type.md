@@ -572,7 +572,7 @@ is discussed in detail in [@?RFC9110] using media types.
 
 ### Other Concepts
 
-[@?VERSIONING-SMACKDOWN] discusses the use of URIs for conveying identifiers that are
+[@?MNOT-VERSIONING] discusses the use of URIs for conveying identifiers that are
 better suited for link relationships and media types.
 
 <reference anchor='RDAP-EXTENSIONS' target='https://www.iana.org/assignments/rdap-extensions/'>
@@ -593,12 +593,11 @@ better suited for link relationships and media types.
     </front>
 </reference>
 
-<reference anchor='VERSIONING-SMACKDOWN' target='https://mnot.net/blog/2011/web_api_versioning_smackdown'>
-    <front>
-        <title>Web API Versioning Smackdown</title>
-        <author>
-            <fullname>Mark Nottingham</fullname>
-        </author>
-    </front>
+<reference anchor="MNOT-VERSIONING" target="https://mnot.net/blog/2011/web_api_versioning_smackdown">
+  <front>
+    <title>Web API Versioning Smackdown</title>
+    <author initials="M." surname="Nottingham" fullname="Mark Nottingham"/>
+    <date year="2011" month="December" day="19"/>
+  </front>
+  <refcontent>Mark Nottingham's Blog</refcontent>
 </reference>
-
