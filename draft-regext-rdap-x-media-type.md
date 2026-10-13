@@ -7,10 +7,10 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-06"
+value = "draft-ietf-regext-rdap-x-media-type-07"
 stream = "IETF"
 status = "standard"
-date = 2026-07-06T00:00:00Z
+date = 2026-10-13T00:00:00Z
 
 [[author]]
 initials="A."
@@ -43,7 +43,8 @@ negotiation.
 
 [@!RFC7480] defines the "application/rdap+json" media type to be used with RDAP. This
 document defines a new parameter for this media type
-when an RDAP extension needs to be described during HTTP content negotiation.
+when an RDAP extension needs to be described during HTTP content negotiation,
+an architectural pattern similar to that defined in [@?RFC9782].
 
 This parameter enables an RDAP
 client to signal to an RDAP server the list of RDAP extensions supported by that client.
@@ -66,13 +67,19 @@ appear in all capitals, as shown here.
 # The RDAP Media Type With "exts_list" Parameter {#parameter}
 
 The RDAP media type, "application/rdap+json", may have an optional parameter named "exts_list". 
-This parameter is a whitespace-separated list of RDAP
+This parameter is a list of RDAP
 extension identifiers and the RDAP version identifier (i.e., "rdap_level_0" defined in
 [@!RFC9083]), as would be found in the "rdapConformance" array.
 
+The value of the "exts_list" parameter is an RDAP extension identifier followed by zero or
+more RDAP extension identifier where each identifier is separated by the "+" character.
+The following [@!STD68] ABNF describes this syntax using the "name" rule from [@!RFC7480]:
+
+    exts_list_param = "exts_list=" name *( "+" name )
+
 Here is an example:
 
-    application/rdap+json;exts_list="rdap_level_0 exts fred"
+    application/rdap+json;exts_list=rdap_level_0+exts+fred
     
 
 # Using The "exts_list" Parameter {#using}
@@ -84,7 +91,7 @@ the "application/rdap+json" media type.
 This is an example of the "accept" header using the RDAP media type with the "exts_list" parameter:
 
     accept: application/json;q=0.9, 
-        application/rdap+json;exts_list="rdap_level_0 exts fred";q=1
+        application/rdap+json;exts_list=rdap_level_0+exts+fred;q=1
     
 If both a client and a server support the "exts_list" parameter, and the client requests
 an extension that is unimplemented by the server, the server MUST respond with
@@ -177,7 +184,7 @@ extension of "foo".
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
+    accept: application/rdap+json;exts_list=rdap_level_0+exts+foo
 
 Server Response:
 
@@ -197,7 +204,7 @@ extension of "foo" by both.
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 exts foo"
+    accept: application/rdap+json;exts_list=rdap_level_0+exts+foo
 
 Server Response:
 
@@ -216,7 +223,7 @@ supports the extensions "foo" and "bar" while the server only support "foo".
 Client Request:
 
     GET /help HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 exts foo bar"
+    accept: application/rdap+json;exts_list=rdap_level_0+exts+foo+bar
 
 Server Response:
 
@@ -230,14 +237,14 @@ Server Response:
 ### Transitioning from jCard to JSContact
 
 This set of examples shows how a transition from RDAP's "legacy" contact format, jCard,
-to JSContact.
+to JSContact (see [@?I-D.ietf-regext-rdap-jscontact]).
 
 The first example of the transition shows a client that supports JSContact and a server that only supports jCard.
 
 Client Request:
 
     GET /entity/fizz1234 HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 jscontact"
+    accept: application/rdap+json;exts_list=rdap_level_0+jscontact
 
 Server Response:
 
@@ -264,7 +271,7 @@ JSContact because the client has signaled that it supports the JSContact extensi
 Client Request:
 
     GET /entity/fizz1234 HTTP/1.1
-    accept: application/rdap+json;exts_list="rdap_level_0 jscontact"
+    accept: application/rdap+json;exts_list=rdap_level_0+jscontact
 
 Server Response:
 
@@ -433,7 +440,7 @@ User Bob sends a query for the domain "example.com"
 for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.
 
 User Alice later sends a query for the same domain, however her client uses the "exts_list" parameter. The "accept"
-header sent for Alice's query might be `accept: application/rdap+json;exts_list="rdap_level_0 exts foo"`.
+header sent for Alice's query might be `accept: application/rdap+json;exts_list=rdap_level_0+exts+foo`.
 
 If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
@@ -450,12 +457,20 @@ consult [@!RFC9110] regarding caching and other uses of the "vary" header.
 
 ## Reusing the Existing Media Type
 
-Earliest versions of this document specified a new media type because the authors believed
+Earlier versions of this document specified a new media type because the authors believed
 the addition of new parameter on the existing RDAP media type may be backwards-incompatible
 with many RDAP servers. However, a study conducted by Pawel Kowalik concluded that 99.65%
 of RDAP servers are compatible with a new parameter on the existing RDAP media type.
 
 Additionally, [@?RFC2045] requires that the server ignore unknown parameters.
+
+## The Plus Separator
+
+Earlier versions of this document specified the "exts_list" parameter as a double-quoted, space-separated
+list of RDAP extension identifiers. Unfortunately, the use of double quotes in media type parameters causes
+web browsers to send "preflight" tests. Such preflight tests fail cross-origin authorizations when the
+response is an HTTP redirect, which are commonly used in the RDAP ecosystem. Therefore, use of the double
+quotes would limit the utility of this extension when used by web-browser-based RDAP clients.
 
 ## Inappropriate Use of Query Parameters
 
