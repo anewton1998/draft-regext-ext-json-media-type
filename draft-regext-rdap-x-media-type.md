@@ -7,10 +7,10 @@ ipr= "trust200902"
 
 [seriesInfo]
 name = "Internet-Draft"
-value = "draft-ietf-regext-rdap-x-media-type-06"
+value = "draft-ietf-regext-rdap-x-media-type-07"
 stream = "IETF"
 status = "standard"
-date = 2026-07-06T00:00:00Z
+date = 2026-10-13T00:00:00Z
 
 [[author]]
 initials="A."
@@ -73,7 +73,7 @@ extension identifiers and the RDAP version identifier (i.e., "rdap_level_0" defi
 
 The value of the "exts_list" parameter is an RDAP extension identifier followed by zero or
 more RDAP extension identifier where each identifier is separated by the "+" character.
-The followin [@!STD68] ABNF describes this syntax using the "name" rule from [@!RFC7480]:
+The following [@!STD68] ABNF describes this syntax using the "name" rule from [@!RFC7480]:
 
     exts_list_param = "exts_list=" name *( "+" name )
 
@@ -237,7 +237,7 @@ Server Response:
 ### Transitioning from jCard to JSContact
 
 This set of examples shows how a transition from RDAP's "legacy" contact format, jCard,
-to JSContact (see [?@I-D.ietf-regext-rdap-jscontact]).
+to JSContact (see [@?I-D.ietf-regext-rdap-jscontact]).
 
 The first example of the transition shows a client that supports JSContact and a server that only supports jCard.
 
@@ -440,7 +440,7 @@ User Bob sends a query for the domain "example.com"
 for Bob's query would be `accept: application/rdap+json` or `accept: application/json`.
 
 User Alice later sends a query for the same domain, however her client uses the "exts_list" parameter. The "accept"
-header sent for Alice's query might be `accept: application/rdap+json;exts_list=rdap_level_0+extsfoo`.
+header sent for Alice's query might be `accept: application/rdap+json;exts_list=rdap_level_0+exts+foo`.
 
 If no "vary" header is set in the response for these queries, the shared cache will compare only
 the URL of the query when processing cache items and therefore user Bob and user Alice would receive
@@ -470,7 +470,7 @@ Earlier versions of this document specified the "exts_list" parameter as a doubl
 list of RDAP extension identifiers. Unfortunately, the use of double quotes in media type parameters causes
 web browsers to send "preflight" tests. Such preflight tests fail cross-origin authorizations when the
 response is an HTTP redirect, which are commonly used in the RDAP ecosystem. Therefore, use of the double
-quotes would limit the utility of this extension when used by web-browser based RDAP clients.
+quotes would limit the utility of this extension when used by web-browser-based RDAP clients.
 
 ## Inappropriate Use of Query Parameters
 
